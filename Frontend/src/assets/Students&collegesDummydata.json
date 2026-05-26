@@ -1,0 +1,47 @@
+[
+    {
+      "_id": {
+        "$oid": "67bee9f585e7d6326eeb515c"
+      },
+      "personal": {
+        "firstName": "Ravi",
+        "middleName": "Kumar",
+        "lastName": "Singh",
+        "gender": "male",
+        "dob": {
+          "$date": "2004-07-15T00:00:00.000Z"
+        },
+        "phone": "9987001234",
+        "email": "Ravi@gmail.com"
+      },
+      "academic": {
+        "collegeName": "B.K Birla College",
+        "collegeCity": "Kalyan",
+        "state": "Maharashtra",
+        "stream": "arts",
+        "course": "bfa",
+        "standard": "sy",
+        "admissionYear": 2021
+      },
+      "other": {
+        "interests": [
+          "MUSIC",
+          "PAINTING"
+        ],
+        "personalityType": "Sanguine Optimist",
+        "genz": true
+      },
+      "auth": {
+        "password": "$2b$10$1jU.c.JMbbKTxlwnIB8j4eU83GZueI6SLKj49.S2Cw6u42tGjDiIK",
+        "isVerified": true
+      },
+      "createdAt": {
+        "$date": "2025-02-26T10:16:21.918Z"
+      },
+      "updatedAt": {
+        "$date": "2025-02-26T10:16:33.379Z"
+      },
+      "__v": 0
+    }
+  ]
+  

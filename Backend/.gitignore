@@ -1,0 +1,49 @@
+# Node modules
+node_modules/
+
+# Env files (very important)
+.env
+*.env
+.env.local
+.env.development
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache
+.cache/
+*.cache
+.tmp/
+temp/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+
+# Build output (if any)
+dist/
+build/
+
+# PM2 files
+pids
+*.pid
+*.seed
+
+# Coverage (Jest / Testing)
+coverage/
+
+# TypeScript (if used)
+*.tsbuildinfo
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+
+# Nodemon debug
+*.orig

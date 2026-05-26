@@ -1,0 +1,716 @@
+[
+    {
+      "draftId": "43d435c4-16f2-4ba1-9745-86f261abf4db-1",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-20T13:20:51.393Z" },
+      "location": {
+        "city": "Kalyan",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Aftab Mahagonde",
+        "experience": 4,
+        "education": "Msc-AI",
+        "age": 25,
+        "salary": 30000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "aftab.mahagonde@classcify.in",
+        "phone": "9987993844",
+        "classrooms": [ "Cybernet" ],
+        "role": "Educator",
+        "uid": "7206066@classcify.in-1"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-20T14:25:47.323Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "d89c2ec4-489e-4c61-9b32-c7c7a9a4d58e-2",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-19T11:15:30.123Z" },
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Riya Sharma",
+        "experience": 6,
+        "education": "MBA",
+        "age": 28,
+        "salary": 45000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "riya.sharma@classcify.in",
+        "phone": "9876543210",
+        "classrooms": [ "TYBSC" ],
+        "role": "Supervisor",
+        "uid": "9206067@classcify.in-2"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-19T12:30:00.456Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "a12e4b5c-33f8-4e1b-a6c3-8d9e5f2a3b71-3",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-18T10:10:10.000Z" },
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Vikram Patel",
+        "experience": 8,
+        "education": "PhD Mathematics",
+        "age": 35,
+        "salary": 60000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "vikram.patel@classcify.in",
+        "phone": "9123456780",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Educator",
+        "uid": "8306068@classcify.in-3"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-18T11:20:15.789Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "f23b5c6d-77a9-4e3e-b3d0-5f8b9d2a1c34-4",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-17T09:00:00.000Z" },
+      "location": {
+        "city": "Nagpur",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Sneha Deshmukh",
+        "experience": 3,
+        "education": "B.Sc Physics",
+        "age": 23,
+        "salary": 28000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "sneha.deshmukh@classcify.in",
+        "phone": "9012345678",
+        "classrooms": [ "TYBSC" ],
+        "role": "Support Staff",
+        "uid": "7406069@classcify.in-4"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-17T10:15:30.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "b34c7d8e-88b0-4d92-a5e7-3f1e2d4c5a67-5",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-16T14:45:20.000Z" },
+      "location": {
+        "city": "Aurangabad",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Aditya Kulkarni",
+        "experience": 10,
+        "education": "M.Tech",
+        "age": 32,
+        "salary": 55000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "aditya.kulkarni@classcify.in",
+        "phone": "9234567890",
+        "classrooms": [ "Cybernet" ],
+        "role": "Educator",
+        "uid": "8506070@classcify.in-5"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-16T15:00:30.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "c45d8e9f-99c1-4e3f-a7d2-6b3f5e8d7c90-6",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-15T08:30:00.000Z" },
+      "location": {
+        "city": "Solapur",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Priya Joshi",
+        "experience": 5,
+        "education": "B.A Economics",
+        "age": 27,
+        "salary": 32000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "priya.joshi@classcify.in",
+        "phone": "9345678901",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Supervisor",
+        "uid": "8606071@classcify.in-6"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-15T09:45:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "d56e9f0a-a1b2-4c3d-8e4f-7a8b9c0d1e2f-7",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-14T07:25:10.000Z" },
+      "location": {
+        "city": "Nashik",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Rahul Desai",
+        "experience": 7,
+        "education": "B.Tech",
+        "age": 29,
+        "salary": 40000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "rahul.desai@classcify.in",
+        "phone": "9456789012",
+        "classrooms": [ "Cybernet" ],
+        "role": "Educator",
+        "uid": "8706072@classcify.in-7"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-14T08:40:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "e67fab1b-b2c3-4d5e-9f01-2a3b4c5d6e7f-8",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-13T12:00:00.000Z" },
+      "location": {
+        "city": "Nagpur",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Kavya Reddy",
+        "experience": 2,
+        "education": "B.Sc Computer Science",
+        "age": 22,
+        "salary": 25000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "kavya.reddy@classcify.in",
+        "phone": "9567890123",
+        "classrooms": [ "TYBSC" ],
+        "role": "Support Staff",
+        "uid": "8806073@classcify.in-8"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-13T13:15:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "f78cda2e-c3d4-4e5f-a6b7-8c9d0e1f2a3b-9",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-12T16:30:00.000Z" },
+      "location": {
+        "city": "Aurangabad",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Manish Kulkarni",
+        "experience": 9,
+        "education": "M.Sc Physics",
+        "age": 34,
+        "salary": 58000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "manish.kulkarni@classcify.in",
+        "phone": "9678901234",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Educator",
+        "uid": "8906074@classcify.in-9"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-12T17:45:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "a89bed3f-d4e5-4f6a-b7c8-9d0e1f2a3b4c-10",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-11T11:05:00.000Z" },
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Neha Verma",
+        "experience": 4,
+        "education": "M.A English",
+        "age": 26,
+        "salary": 31000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "neha.verma@classcify.in",
+        "phone": "9789012345",
+        "classrooms": [ "TYBSC" ],
+        "role": "Supervisor",
+        "uid": "9006075@classcify.in-10"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-11T12:20:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "b90cef4a-e5f6-4a7b-c8d9-0e1f2a3b5c6d-11",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-10T09:15:00.000Z" },
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Suresh Iyer",
+        "experience": 12,
+        "education": "PhD Physics",
+        "age": 40,
+        "salary": 75000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "suresh.iyer@classcify.in",
+        "phone": "9890123456",
+        "classrooms": [ "Cybernet" ],
+        "role": "Educator",
+        "uid": "9106076@classcify.in-11"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-10T10:30:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "c01df05b-f7e8-4c9d-a0b1-2c3d4e5f6a7b-12",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-09T15:20:00.000Z" },
+      "location": {
+        "city": "Nashik",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Ritika Singh",
+        "experience": 3,
+        "education": "B.Sc Mathematics",
+        "age": 24,
+        "salary": 29000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "ritika.singh@classcify.in",
+        "phone": "9901234567",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Support Staff",
+        "uid": "9206077@classcify.in-12"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-09T16:35:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "d12ef16c-g8h9-4i0j-k1l2-3m4n5o6p7q8r-13",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-08T08:00:00.000Z" },
+      "location": {
+        "city": "Aurangabad",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Manoj Kumar",
+        "experience": 11,
+        "education": "M.Tech",
+        "age": 38,
+        "salary": 67000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "manoj.kumar@classcify.in",
+        "phone": "9012345601",
+        "classrooms": [ "Cybernet" ],
+        "role": "Supervisor",
+        "uid": "9306078@classcify.in-13"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-08T09:10:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "e23fg27d-h9i0-4j1k-l2m3-4n5o6p7q8r9s-14",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-07T14:10:00.000Z" },
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Anjali Mehta",
+        "experience": 5,
+        "education": "B.Com",
+        "age": 27,
+        "salary": 33000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "anjali.mehta@classcify.in",
+        "phone": "9123456701",
+        "classrooms": [ "TYBSC" ],
+        "role": "Educator",
+        "uid": "9406079@classcify.in-14"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-07T15:25:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "f34gh38e-i0j1-4k2l-m3n4-5o6p7q8r9s0t-15",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-06T10:45:00.000Z" },
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Rahul Nair",
+        "experience": 7,
+        "education": "M.Sc Chemistry",
+        "age": 30,
+        "salary": 41000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "rahul.nair@classcify.in",
+        "phone": "9234567012",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Supervisor",
+        "uid": "9506080@classcify.in-15"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-06T11:55:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "g45hi49f-j1k2-4l3m-n4o5-6p7q8r9s0t1u-16",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-05T13:30:00.000Z" },
+      "location": {
+        "city": "Aurangabad",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Shweta Kulkarni",
+        "experience": 4,
+        "education": "B.Sc Biology",
+        "age": 25,
+        "salary": 30000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "shweta.kulkarni@classcify.in",
+        "phone": "9345670123",
+        "classrooms": [ "Cybernet" ],
+        "role": "Educator",
+        "uid": "9606081@classcify.in-16"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-05T14:40:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "h56ij50g-k2l3-4m4n-o5p6-7q8r9s0t1u2v-17",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-04T11:20:00.000Z" },
+      "location": {
+        "city": "Nashik",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Deepak Reddy",
+        "experience": 8,
+        "education": "M.Tech",
+        "age": 33,
+        "salary": 50000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "deepak.reddy@classcify.in",
+        "phone": "9456701234",
+        "classrooms": [ "TYBSC" ],
+        "role": "Supervisor",
+        "uid": "9706082@classcify.in-17"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-04T12:35:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "i67jk61h-l3m4-5n5o-p6q7-8r9s0t1u2v3w-18",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-03T09:40:00.000Z" },
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Aniket Deshpande",
+        "experience": 6,
+        "education": "B.Tech",
+        "age": 28,
+        "salary": 37000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "aniket.deshpande@classcify.in",
+        "phone": "9567012345",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Educator",
+        "uid": "9806083@classcify.in-18"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-03T10:55:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "j78kl72i-m4n5-6o6p-q7r8-9s0t1u2v3w4x-19",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-02T07:50:00.000Z" },
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Pooja Patil",
+        "experience": 5,
+        "education": "MBA",
+        "age": 29,
+        "salary": 42000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "pooja.patil@classcify.in",
+        "phone": "9670123456",
+        "classrooms": [ "Cybernet" ],
+        "role": "Supervisor",
+        "uid": "9906084@classcify.in-19"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-02T09:05:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "k89lm83j-n5o6-7p7q-r8s9-0t1u2v3w4x5y-20",
+      "__v": 0,
+      "createdAt": { "$date": "2025-02-01T12:15:00.000Z" },
+      "location": {
+        "city": "Aurangabad",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Sonal Deshmukh",
+        "experience": 3,
+        "education": "B.Sc Commerce",
+        "age": 24,
+        "salary": 26000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "sonal.deshmukh@classcify.in",
+        "phone": "9780123456",
+        "classrooms": [ "TYBSC" ],
+        "role": "Educator",
+        "uid": "10006085@classcify.in-20"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-02-01T13:25:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "l90nm94k-o6p7-8q8r-s9t0-1u2v3w4x5y6z-21",
+      "__v": 0,
+      "createdAt": { "$date": "2025-01-31T10:05:00.000Z" },
+      "location": {
+        "city": "Nashik",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Vandana Rao",
+        "experience": 7,
+        "education": "M.Sc History",
+        "age": 31,
+        "salary": 38000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "married"
+      },
+      "professional": {
+        "email": "vandana.rao@classcify.in",
+        "phone": "9891234567",
+        "classrooms": [ "SYBCOM" ],
+        "role": "Supervisor",
+        "uid": "11006086@classcify.in-21"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-01-31T11:20:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "m01on05l-p7q8-9r9s-t0u1-2v3w4x5y6z7a-22",
+      "__v": 0,
+      "createdAt": { "$date": "2025-01-30T08:40:00.000Z" },
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Arjun Kapoor",
+        "experience": 6,
+        "education": "B.Tech",
+        "age": 27,
+        "salary": 36000,
+        "termsAccepted": "on",
+        "gender": "male",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "arjun.kapoor@classcify.in",
+        "phone": "9019876543",
+        "classrooms": [ "Cybernet" ],
+        "role": "Educator",
+        "uid": "12006087@classcify.in-22"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-01-30T09:55:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    },
+    {
+      "draftId": "n12po16m-q8r9-0s0t-u1v2-3w4x5y6z7a8b-23",
+      "__v": 0,
+      "createdAt": { "$date": "2025-01-29T07:30:00.000Z" },
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "personal": {
+        "name": "Meera Joshi",
+        "experience": 4,
+        "education": "B.A Sociology",
+        "age": 26,
+        "salary": 29000,
+        "termsAccepted": "on",
+        "gender": "female",
+        "maritalStatus": "unmarried"
+      },
+      "professional": {
+        "email": "meera.joshi@classcify.in",
+        "phone": "9123987654",
+        "classrooms": [ "TYBSC" ],
+        "role": "Supervisor",
+        "uid": "13006088@classcify.in-23"
+      },
+      "status": "verified",
+      "updatedAt": { "$date": "2025-01-29T08:45:00.000Z" },
+      "otp": null,
+      "otpExpiry": null
+    }
+  ]
+  

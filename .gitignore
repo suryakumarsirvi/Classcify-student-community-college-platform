@@ -1,0 +1,17 @@
+# Env files
+backend/.env
+frontend/.env
+*.env
+
+# Dependencies
+backend/node_modules/
+frontend/node_modules/
+
+# Builds
+frontend/dist/
+backend/dist/
+
+# Misc
+.DS_Store
+
+AllEndpoints.json

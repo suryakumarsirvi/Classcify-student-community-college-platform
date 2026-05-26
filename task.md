@@ -1,0 +1,17 @@
+- [x] Install required dependencies (zod, helmet, express-mongo-sanitize, hpp)
+- [x] Create shared constants (roles, status codes, messages)
+- [x] Create centralized utility helpers (ApiError, ApiResponse, asyncHandler, logger, token, hash)
+- [x] Create core middleware (error handling, auth, validation, rate limiting, sanitization, file upload)
+- [ ] Create database connection and central models folder
+- [ ] Refactor shared services (email service, Twilio SMS service, Cloudinary upload)
+- [ ] Implement domain modules under src/modules/
+  - [ ] Admin module (auth, profile, dashboard stats, analytics reports CRUD)
+  - [ ] Teacher module (auth, draft saving, verify, classroom students)
+  - [ ] Student module (auth, signup, verify, invitations, classroom dashboard)
+  - [ ] Post module (posts, comments, likes, search, explore)
+  - [ ] Message module (conversations, direct messages, community messages)
+  - [ ] Timetable, Assignment, Announcement modules
+  - [ ] Attendance module (marking, fetch, stats, heatmaps)
+  - [ ] Asset & Resource modules (file sharing, downloading)
+- [ ] Create app.js and server.js under src/
+- [ ] Clean up legacy files and verify server integration
