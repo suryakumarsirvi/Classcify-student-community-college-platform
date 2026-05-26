@@ -30,12 +30,25 @@ const Messages = () => {
   const { user } = useAuth();
 
   const formatMessage = (message) => {
+    if (!message) return null;
+    let senderName = "Unknown";
+    if (message.sender) {
+      if (message.sender.personal) {
+        senderName = `${message.sender.personal.firstName || ""} ${message.sender.personal.lastName || ""}`.trim();
+      } else if (message.sender.name) {
+        senderName = message.sender.name;
+      } else if (message.sender.email) {
+        senderName = message.sender.email;
+      } else if (typeof message.sender === "string") {
+        senderName = message.sender;
+      }
+    }
     return {
       id: message._id,
       content: message.content,
       sender: {
-        id: message.sender._id,
-        name: `${message.sender.personal.firstName} ${message.sender.personal.lastName}`,
+        id: message.sender?._id || message.senderId || message.sender,
+        name: senderName || "Unknown",
         type: message.senderType
       },
       receiver: {
