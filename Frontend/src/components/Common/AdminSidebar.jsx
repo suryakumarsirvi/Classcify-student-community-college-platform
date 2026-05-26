@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -10,15 +10,12 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   BarChart,
-  Bell,
   BookOpen,
-  Calendar,
   Compass,
   Globe,
   HelpCircle,
   LayoutDashboard,
   LogOutIcon,
-  Menu,
   MessageSquare,
   Moon,
   PanelLeft,
@@ -42,15 +39,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Link, useLocation } from "react-router-dom";
-import useAuth from "@/contexts/AuthContext.jsx";
+import { NavLink } from "react-router";
+import useAuth from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const AdminSidebar = ({ isExpanded, toggle }) => {
-  const location = useLocation();
   const { user, updateUser } = useAuth();
-  const [activeItem, setActiveItem] = useState("dashboard");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -59,17 +54,6 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
     email: user?.email || "",
     avatar: user?.avatar || "",
   });
-
-  // Get active path from localStorage or current location
-  const [activePath, setActivePath] = useState(() => {
-    return localStorage.getItem("adminActivePath") || location.pathname;
-  });
-
-  // Update localStorage when path changes
-  useEffect(() => {
-    localStorage.setItem("adminActivePath", location.pathname);
-    setActivePath(location.pathname);
-  }, [location.pathname]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -98,7 +82,7 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
       id: "explore",
       label: "Explore",
       icon: Compass,
-      path: "explore",
+      path: "/admin/dashboard/explore",
     },
     {
       id: "staffroom",
@@ -133,7 +117,6 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="fixed left-0 top-0 h-screen bg-white border-r shadow-md flex flex-col z-50"
       >
-        {/* Sidebar Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b">
           {isExpanded && (
             <motion.span className="text-lg font-semibold">
@@ -152,46 +135,47 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
           </Button>
         </div>
 
-        {/* Sidebar Items */}
         <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-zinc-300">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             return (
               <Tooltip key={item.id} delayDuration={300}>
                 <TooltipTrigger asChild>
-                  <motion.button
-                    initial={false}
-                    animate={{
-                      backgroundColor: activeItem === item.id
-                        ? "rgba(224, 231, 255, 1)"
-                        : "rgba(224, 231, 255, 0)",
-                    }}
-                    onClick={() => setActiveItem(item.id)}
-                    className={cn(
-                      "flex items-center gap-3 w-full cursor-pointer p-3 rounded-lg text-zinc-700",
-                      activeItem === item.id
-                        ? "text-indigo-700 font-semibold"
-                        : "hover:bg-zinc-100",
-                      isExpanded ? "justify-start" : "justify-center",
-                    )}
+                  <NavLink
+                    to={item.path}
+                    end={item.id === "dashboard"}
+                    className="block w-full"
                   >
-                    <Link
-                      to={item.path}
-                      className="flex items-center gap-3 w-full"
-                    >
-                      <Icon className="w-5 h-5" />
-                      {isExpanded && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          className="text-sm font-medium"
-                        >
-                          {item.label}
-                        </motion.span>
-                      )}
-                    </Link>
-                  </motion.button>
+                    {({ isActive }) => (
+                      <motion.div
+                        initial={false}
+                        animate={{
+                          backgroundColor: isActive
+                            ? "rgba(224, 231, 255, 1)"
+                            : "rgba(224, 231, 255, 0)",
+                        }}
+                        className={cn(
+                          "flex items-center gap-3 w-full cursor-pointer p-3 rounded-lg text-zinc-700 transition-colors",
+                          isActive
+                            ? "text-indigo-700 font-semibold"
+                            : "hover:bg-zinc-100",
+                          isExpanded ? "justify-start" : "justify-center"
+                        )}
+                      >
+                        <Icon className="w-5 h-5 flex-shrink-0" />
+                        {isExpanded && (
+                          <motion.span
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            className="text-sm font-medium whitespace-nowrap"
+                          >
+                            {item.label}
+                          </motion.span>
+                        )}
+                      </motion.div>
+                    )}
+                  </NavLink>
                 </TooltipTrigger>
                 {!isExpanded && (
                   <TooltipContent side="right">{item.label}</TooltipContent>
@@ -215,7 +199,7 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
               align="end"
               className="absolute bottom-0 left-5 w-56 shadow-lg"
             >
-              <DropdownMenuItem className="flex items-center gap-3">
+              <DropdownMenuItem className="flex items-center gap-3" onClick={() => setIsProfileOpen(true)}>
                 <Settings className="w-4 h-4" />
                 Manage Profile
               </DropdownMenuItem>
@@ -274,7 +258,6 @@ const AdminSidebar = ({ isExpanded, toggle }) => {
         </div>
       </motion.aside>
 
-      {/* Profile Dialog */}
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
         <DialogContent>
           <DialogHeader>

@@ -28,11 +28,11 @@ const Notification = () => {
 
   const loadNotifications = async () => {
     try {
-      // Load community invitations
+      
       const { data: invitations } = await MessageAPI.getInvitations();
       console.log("Direct Message Invitations:", invitations);
       
-      // Load join requests for communities where user is admin/creator
+      
       try {
         const { data: joinRequests } = await api.get('/api/messages/communities/join-requests');
         console.log("Join Requests Data:", joinRequests);
@@ -42,17 +42,17 @@ const Notification = () => {
         });
       } catch (joinRequestError) {
         console.error("Error loading join requests:", joinRequestError);
-        // If join requests fail, still show invitations
+        
         setNotifications({
           invitations: invitations || [],
           joinRequests: []
         });
-        // Show error toast to user
+        
         toast.error("Failed to load join requests. Please try again later.");
       }
     } catch (error) {
       console.error("Error loading notifications:", error);
-      // Show error toast to user
+      
       toast.error("Failed to load notifications. Please try again later.");
       setNotifications({
         invitations: [],
@@ -66,7 +66,7 @@ const Notification = () => {
 
     if (!socket) return;
 
-    // Handle new invitations
+    
     const handleNewInvitation = (invitation) => {
       setNotifications(prev => ({
         ...prev,
@@ -74,7 +74,7 @@ const Notification = () => {
       }));
     };
 
-    // Handle new join requests
+    
     const handleJoinRequest = (request) => {
       setNotifications(prev => ({
         ...prev,
@@ -151,7 +151,7 @@ const Notification = () => {
     }
   };
 
-  // Get total notification count
+  
   const totalNotifications = notifications.invitations.length + notifications.joinRequests.length;
 
   return (

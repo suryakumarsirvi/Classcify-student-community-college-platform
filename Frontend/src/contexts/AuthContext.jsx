@@ -1,71 +1,62 @@
-// contexts/AuthContext.jsx
-import { createContext, useContext, useEffect, useState } from "react";
-import api from "@/api/axios";
+import React, { createContext, useContext, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import api from "@/services/api";
+import { setUser, setLoading, logoutUser } from "@/modules/auth/store/auth.slice";
+import { authService } from "@/modules/auth/services/auth.service";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const loading = useSelector((state) => state.auth.loading);
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Check for tokens
         const studentToken = localStorage.getItem("studentToken");
         const teacherToken = localStorage.getItem("teacherToken");
         const adminToken = localStorage.getItem("adminToken");
 
         if (!studentToken && !teacherToken && !adminToken) {
-          setLoading(false);
+          dispatch(setLoading(false));
           return;
         }
 
-        // Set the token in axios headers
         if (studentToken) {
           api.defaults.headers.common["Authorization"] = `Bearer ${studentToken}`;
-          const { data } = await api.get("/api/students/profile");
-          setUser({ ...data, role: "student" });
+          const data = await authService.getProfile("student");
+          dispatch(setUser({ ...data, role: "student" }));
         } else if (teacherToken) {
           api.defaults.headers.common["Authorization"] = `Bearer ${teacherToken}`;
-          const { data } = await api.get("/api/teachers/profile");
-          setUser({ ...data, role: "teacher" });
+          const data = await authService.getProfile("teacher");
+          dispatch(setUser({ ...data, role: "teacher" }));
         } else if (adminToken) {
           api.defaults.headers.common["Authorization"] = `Bearer ${adminToken}`;
-          const { data } = await api.get("/api/admin/profile");
-          setUser({ ...data, role: "admin" });
+          const data = await authService.getProfile("admin");
+          dispatch(setUser({ ...data, role: "admin" }));
         }
       } catch (error) {
-        console.error("Auth Error:", error);
-        // Clear tokens on error
         localStorage.removeItem("studentToken");
         localStorage.removeItem("teacherToken");
         localStorage.removeItem("adminToken");
-        // Clear axios headers
         delete api.defaults.headers.common["Authorization"];
-        setUser(null);
+        dispatch(setUser(null));
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     };
 
     initializeAuth();
-  }, []);
+  }, [dispatch]);
 
   const login = async (credentials) => {
     try {
-      const endpoint = credentials.role === "student" ? "/api/students/login" :
-                      credentials.role === "teacher" ? "/api/teachers/login" :
-                      "/api/admin/login";
-
-      const { data } = await api.post(endpoint, credentials);
-      
-      // Store token based on role
+      const data = await authService.login(credentials);
       const tokenKey = `${credentials.role}Token`;
       localStorage.setItem(tokenKey, data.token);
       api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-
-      setUser({ ...data.user, role: credentials.role });
+      dispatch(setUser({ ...data.user, role: credentials.role }));
       return data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -74,9 +65,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const { data } = await api.post("/api/auth/register", userData);
-      
-      // Store token based on role
+      const data = await authService.register(userData);
       if (data.role === "student") {
         localStorage.setItem("studentToken", data.token);
         api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
@@ -84,8 +73,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("teacherToken", data.token);
         api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
       }
-
-      setUser({ ...data.user, role: data.role });
+      dispatch(setUser({ ...data.user, role: data.role }));
       return data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -97,27 +85,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("teacherToken");
     localStorage.removeItem("adminToken");
     delete api.defaults.headers.common["Authorization"];
-    setUser(null);
+    dispatch(logoutUser());
   };
 
   const updateUser = async (userData) => {
     try {
-      const formData = new FormData();
-      
-      // Append all user data to FormData
-      Object.keys(userData).forEach(key => {
-        if (userData[key] !== undefined && userData[key] !== null) {
-          formData.append(key, userData[key]);
-        }
-      });
-
-      const { data } = await api.put("/api/auth/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setUser(prev => ({ ...data, role: prev.role }));
+      const data = await authService.updateUser(userData);
+      dispatch(setUser({ ...data, role: user?.role }));
       return data;
     } catch (error) {
       throw error.response?.data || error.message;
@@ -140,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-const useAuth = () => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

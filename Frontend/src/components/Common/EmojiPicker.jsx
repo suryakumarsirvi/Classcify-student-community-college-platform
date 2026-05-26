@@ -7,7 +7,7 @@ const EmojiPicker = ({ onSelect }) => {
 
   return (
     <div className="relative">
-      {/* Emoji Button */}
+      {}
       <button
         onClick={() => setShowPicker(!showPicker)}
         className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"

@@ -1,14 +1,11 @@
+import React, { useEffect, useState } from "react";
 import TeacherSidebar from "@/components/Common/TeacherSidebar";
 import { cn } from "@/lib/utils";
-import TeacherDashboard from "@/pages/teacher/TeacherDashboard";
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 
 const TeacherDashboardLayout = () => {
-  // Get initial state from localStorage or default to true
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(() => {
-    const savedState = localStorage.getItem('teacherSidebarExpanded');
-    // Only use saved state if it exists and is "false", otherwise default to true
+    const savedState = localStorage.getItem("teacherSidebarExpanded");
     return savedState === "false" ? false : true;
   });
   
@@ -21,9 +18,8 @@ const TeacherDashboardLayout = () => {
     }
   }, [navigate]);
 
-  // Save sidebar state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('teacherSidebarExpanded', isSidebarExpanded);
+    localStorage.setItem("teacherSidebarExpanded", isSidebarExpanded);
   }, [isSidebarExpanded]);
 
   const toggleSidebar = () => {
@@ -36,7 +32,7 @@ const TeacherDashboardLayout = () => {
       <div
         className={cn(
           "transition-all duration-300",
-          isSidebarExpanded ? "pl-64" : "pl-20",
+          isSidebarExpanded ? "pl-64" : "pl-20"
         )}
       >
         <main className="p-4">

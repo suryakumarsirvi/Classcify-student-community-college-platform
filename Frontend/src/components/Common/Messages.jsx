@@ -58,7 +58,7 @@ const Messages = () => {
       const response = await MessageAPI.getDirectMessages(userId);
       console.log(`📨 Direct messages response for user ${userId}:`, response.data);
       
-      // Format messages before storing
+      
       const formattedMessages = Array.isArray(response.data) 
         ? response.data.map(formatMessage)
         : [formatMessage(response.data)];
@@ -84,7 +84,7 @@ const Messages = () => {
       alert(`You have been invited to join ${invitation.community.name}`);
     });
 
-    // Listen for new direct messages
+    
     socket.on("direct-message", (message) => {
       console.log("📨 New direct message received:", message);
       const otherUserId = message.senderId === user._id ? message.receiverId : message.senderId;
@@ -111,10 +111,10 @@ const Messages = () => {
 
     setLoading(true);
     try {
-      // Search for users
+      
       const users = await studentApi.searchUsers(query);
       
-      // Search for communities
+      
       const communitiesResponse = await api.get(`/api/messages/communities/search?query=${query}`);
       const communities = communitiesResponse.data || [];
       
@@ -159,7 +159,7 @@ const Messages = () => {
             throw new Error("User not authenticated");
         }
 
-        // Ensure userType matches the enum values exactly
+        
         const userType = user.role === 'admin' ? 'Admin' : 
                         user.role === 'teacher' ? 'Teacher' : 'Student';
 
@@ -173,7 +173,7 @@ const Messages = () => {
             }
         });
         
-        // Show sent status for this community
+        
         setRequestSent(prev => ({
             ...prev,
             [communityId]: true
@@ -186,7 +186,7 @@ const Messages = () => {
             }));
         }, 3000);
         
-        // Emit socket event to notify community admin
+        
         if (socket) {
             socket.emit("join-request-sent", { 
                 communityId, 
@@ -212,7 +212,7 @@ const Messages = () => {
       alert("✅ Invitation sent successfully!");
     });
 
-    // Add socket event listener for direct messages
+    
     socket.on("direct-message", (message) => {
       console.log("📨 New direct message received:", message);
     });
@@ -229,7 +229,7 @@ const Messages = () => {
     }
   
     try {
-      // Format participants with proper structure
+      
       const participants = [
         {
           participantId: user._id,
@@ -244,11 +244,11 @@ const Messages = () => {
       console.log("📝 Creating conversation with participants:", participants);
       const response = await MessageAPI.createConversation({ participants });
       
-      // Extract conversation data
+      
       const conversation = response.data;
       console.log("💬 New conversation created:", conversation);
       
-      // Set selected chat with proper structure
+      
       setSelectedChat({
         ...conversation,
         type: "direct",
@@ -258,7 +258,7 @@ const Messages = () => {
         ]
       });
 
-      // Fetch messages for this user
+      
       await fetchDirectMessages(selectedUser._id);
   
       setIsSearchOpen(false);
@@ -275,7 +275,7 @@ const Messages = () => {
       conversation.type === "community" ? conversation : null,
     );
 
-    // If it's a direct message conversation, fetch the messages
+    
     if (conversation.type === "direct") {
       const otherUser = conversation.participants.find(p => p._id !== user._id);
       if (otherUser) {
@@ -284,19 +284,19 @@ const Messages = () => {
     }
   };
 
-  // Get filtered results based on search tab
+  
   const getFilteredResults = () => {
     if (searchTab === "users") return searchResults.users;
     if (searchTab === "communities") return searchResults.communities;
     
-    // For "all" tab, combine both results
+    
     return [
       ...searchResults.users.map(item => ({...item, type: 'user'})),
       ...searchResults.communities.map(item => ({...item, type: 'community'}))
     ];
   };
 
-  // Get messages for the currently selected chat
+  
   const getCurrentMessages = () => {
     if (!selectedChat || selectedChat.type !== "direct") return [];
     
@@ -306,7 +306,7 @@ const Messages = () => {
     return directMessages[otherUser._id] || [];
   };
 
-  // Get loading state for the currently selected chat
+  
   const getCurrentLoadingState = () => {
     if (!selectedChat || selectedChat.type !== "direct") return false;
     
@@ -318,7 +318,7 @@ const Messages = () => {
 
   return (
     <div className="flex h-screen relative">
-      {/* Search Bar Button */}
+      {}
       <div className="absolute top-1 z-50">
         <Button
           variant="outline"
@@ -468,7 +468,7 @@ const Messages = () => {
         </div>
       )}
 
-      {/* Chat and Sidebar */}
+      {}
       <ChatArea
         selectedCommunity={selectedCommunity}
         selectedConversation={selectedChat}

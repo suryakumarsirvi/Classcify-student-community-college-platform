@@ -108,7 +108,7 @@ const AssetDetailsDialog = ({ asset, isOpen, onClose, onDownload, onFavorite }) 
             )}
           </div>
 
-          {/* Details Section */}
+          {}
           <div className="space-y-4">
             <div>
               <h3 className="font-semibold text-lg">{asset.name}</h3>
@@ -399,12 +399,12 @@ const Assets = () => {
       
       setAssets(data);
       
-      // Update category counts
+      
       categories.forEach(cat => {
         cat.count = data.filter(asset => asset.category === cat.id).length;
       });
 
-      // Update file type counts
+      
       fileTypes.forEach(type => {
         type.count = data.filter(asset => asset.fileType === type.id).length;
       });
@@ -484,9 +484,9 @@ const Assets = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Main Content */}
+      {}
       <div className="flex-1 flex flex-col">
-        {/* Header with Search and Filters */}
+        {}
         <div className="border-b p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -525,7 +525,7 @@ const Assets = () => {
           </div>
         </div>
 
-        {/* Asset Grid */}
+        {}
         <ScrollArea className="flex-1 p-4">
           {isLoading ? (
             <div className="grid place-items-center h-full">
@@ -562,9 +562,9 @@ const Assets = () => {
         </ScrollArea>
       </div>
 
-      {/* Compact Sidebar (Right) */}
+      {}
       <div className="w-14 py-4 flex flex-col items-center gap-6">
-        {/* Main Categories */}
+        {}
         <div className="space-y-4">
           {categories.map((category) => (
             <SidebarItem
@@ -578,7 +578,7 @@ const Assets = () => {
           ))}
         </div>
 
-        {/* Divider */}
+        {}
         <div className="w-8 h-px bg-border/50" />
 
         {/* Quick Access */}

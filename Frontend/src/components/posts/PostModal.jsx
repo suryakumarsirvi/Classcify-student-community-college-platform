@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PostCard from "./PostCard";
-// import CommentSection from "@/components/Common/CommentSection";/
+
 import postApi from "@/api/post.api";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -38,24 +38,7 @@ const PostModal = ({ post, onClose, onDelete }) => {
             <PostCard post={localPost} isModal />
           </div>
 
-          {/* <div className="border-l p-4 flex flex-col">
-            <CommentSection 
-              post={localPost}
-              setPost={setLocalPost}
-            />
-            
-            {post.author._id === localStorage.getItem("userId") && (
-              <div className="mt-auto pt-4 border-t">
-                <Button
-                  variant="destructive"
-                  onClick={handleDeletePost}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete Post"}
-                </Button>
-              </div>
-            )}
-          </div> */}
+          {}
         </div>
       </DialogContent>
     </Dialog>

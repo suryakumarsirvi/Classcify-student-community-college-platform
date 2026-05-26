@@ -1,4 +1,4 @@
-// src/components/common/PartyEffect.jsx
+
 import React from "react";
 import confetti from "canvas-confetti";
 
@@ -45,7 +45,7 @@ export const fireConfetti = () => {
 };
 
 const PartyEffect = () => {
-  // If you want a component that automatically fires confetti on mount:
+  
   React.useEffect(() => {
     fireConfetti();
   }, []);

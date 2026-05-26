@@ -1,4 +1,4 @@
-// UserCard.jsx
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -37,7 +37,7 @@ const UserCard = ({ user, className = "", variant = "suggested" }) => {
         );
     }
 
-    // Default variant for explore/search results
+    
     return (
         <Card className={`group hover:shadow-md transition-all border-primary/10 ${className}`}>
             <CardContent className="p-4">

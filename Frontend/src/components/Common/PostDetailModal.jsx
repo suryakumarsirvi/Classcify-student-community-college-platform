@@ -26,7 +26,7 @@ const PostDetailModal = ({ post, isOpen, onClose, suggestedPosts, onSuggestedPos
         </DialogHeader>
         
         <div className="flex-1 flex gap-4 overflow-hidden">
-          {/* Main Post Content */}
+          {}
           <div className="flex-1 min-w-0">
             <Card className="h-full flex flex-col">
               <CardHeader className="flex-shrink-0">
@@ -78,7 +78,7 @@ const PostDetailModal = ({ post, isOpen, onClose, suggestedPosts, onSuggestedPos
             </Card>
           </div>
 
-          {/* Suggested Posts */}
+          {}
           <div className="w-80 flex-shrink-0">
             <h3 className="font-semibold mb-4">Suggested Posts</h3>
             <ScrollArea className="h-[calc(100vh-200px)]">

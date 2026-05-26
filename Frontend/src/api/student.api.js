@@ -1,4 +1,4 @@
-// api/student.api.js
+
 import api from './axios';
 
 const studentApi = {
@@ -66,7 +66,7 @@ const studentApi = {
     }
   },
 
-  // Get student's assignments
+  
   getAssignments: async () => {
     try {
       const response = await api.get('/api/students/assignments');
@@ -77,7 +77,7 @@ const studentApi = {
     }
   },
 
-  // Get student's announcements
+  
   getAnnouncements: async () => {
     try {
       const response = await api.get('/api/students/announcements');
@@ -88,7 +88,7 @@ const studentApi = {
     }
   },
 
-  // Get student's attendance for a course
+  
   getMyAttendance: async (course, startDate, endDate) => {
     try {
       const response = await api.get('/api/attendance/student', {

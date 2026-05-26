@@ -1,4 +1,4 @@
-// frontend/src/api/post.api.js
+
 import api from './axios';
 
 const postApi = {
@@ -71,7 +71,7 @@ const postApi = {
     }
   },
 
-  // Post Search
+  
   searchPosts: async (query) => {
     try {
       const response = await api.get(`/api/posts/search?q=${query}`);
@@ -81,7 +81,7 @@ const postApi = {
     }
   },
 
-  // Get Explore Posts
+  
   getExplorePosts: async () => {
     try {
       const response = await api.get('/api/posts/explore');

@@ -139,7 +139,7 @@ const teacherApi = {
     }
   },
 
-  // Mark attendance for a class
+  
   markAttendance: async (data) => {
     try {
       const response = await api.post('/api/attendance', data);
@@ -150,7 +150,7 @@ const teacherApi = {
     }
   },
 
-  // Get attendance for a specific date and course
+  
   getAttendance: async (course, date) => {
     try {
       const response = await api.get('/api/attendance', {
@@ -163,7 +163,7 @@ const teacherApi = {
     }
   },
 
-  // Get attendance statistics
+  
   getAttendanceStats: async (course, startDate, endDate) => {
     try {
       const response = await api.get('/api/attendance/stats', {
@@ -176,7 +176,7 @@ const teacherApi = {
     }
   },
 
-  // Update attendance record
+  
   updateAttendanceRecord: async (attendanceId, data) => {
     try {
       const response = await api.put(`/api/attendance/${attendanceId}`, data);
@@ -187,7 +187,7 @@ const teacherApi = {
     }
   },
 
-  // Get students by classroom
+  
   getClassroomStudents: async (classroom) => {
     try {
       const response = await api.get(`/api/teachers/classroom/${classroom}/students`);
@@ -198,7 +198,7 @@ const teacherApi = {
     }
   },
 
-  // Get student attendance heatmap data
+  
   getStudentAttendanceHeatmap: async (studentId, classroom) => {
     try {
       const response = await api.get(`/api/attendance/heatmap/${studentId}`, {

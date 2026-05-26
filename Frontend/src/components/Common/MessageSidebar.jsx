@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
 import studentApi from "@/api/student.api";
+import { useQuery } from "@tanstack/react-query";
 
 const MessageSidebar = ({ onSelect }) => {
   const [viewMode, setViewMode] = useState("communities");
@@ -17,7 +18,6 @@ const MessageSidebar = ({ onSelect }) => {
   const [conversations, setConversations] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [showCommunityForm, setShowCommunityForm] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [newCommunity, setNewCommunity] = useState({
     name: "",
     description: "",
@@ -26,83 +26,83 @@ const MessageSidebar = ({ onSelect }) => {
   const { user } = useAuth();
   const socket = useSocket();
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        
-        // Check if user is authenticated
-        if (!user || !user._id) {
-          console.log('User not authenticated, skipping data load');
-          return;
-        }
+  const { data: communitiesData, isLoading: isLoadingCommunities } = useQuery({
+    queryKey: ["userCommunities", user?._id],
+    queryFn: async () => {
+      const response = await MessageAPI.getUserCommunities();
+      const userCommunities = response?.data ? 
+        (Array.isArray(response.data) ? response.data : [response.data]) : [];
+      
+      const filteredCommunities = userCommunities.filter(community => {
+        if (!community || !community._id) return false;
+        return community.creator?._id === user._id;
+      });
 
-        // Get user's communities
-        const response = await MessageAPI.getUserCommunities();
-        
-        // Filter communities where user is the creator
-        const userCommunities = response?.data ? 
-          (Array.isArray(response.data) ? response.data : [response.data]) : [];
-        
-        const filteredCommunities = userCommunities.filter(community => {
-          if (!community || !community._id) return false;
-          
-          // Only show communities where user is the creator
-          return community.creator?._id === user._id;
-        });
+      return filteredCommunities.reduce((acc, current) => {
+        if (!current || !current._id) return acc;
+        const exists = acc.find((item) => item._id === current._id);
+        return exists ? acc : [...acc, current];
+      }, []);
+    },
+    enabled: !!user?._id,
+  });
 
-        // Deduplicate just in case
-        const uniqueCommunities = filteredCommunities.reduce((acc, current) => {
-          if (!current || !current._id) return acc;
-          const exists = acc.find((item) => item._id === current._id);
-          return exists ? acc : [...acc, current];
-        }, []);
-
-        console.log('Loaded user communities:', uniqueCommunities);
-        setCommunities(uniqueCommunities);
-
-        // Load all users
-        const usersResponse = await studentApi.getAllStudents();
-        if (usersResponse?.data) {
-          // Filter out current user and format the data
-          const formattedUsers = usersResponse.data
-            .filter(u => u._id !== user._id)
-            .map(u => ({
-              _id: u._id,
-              personal: u.personal,
-              academic: u.academic
-            }));
-          setAllUsers(formattedUsers);
-        }
-
-        // Also load direct conversations
-        const convResponse = await MessageAPI.getUserConversations();
-        if (convResponse?.data) {
-          const formattedConversations = convResponse.data.map(conv => ({
-            ...conv,
-            participants: conv.participants.map(p => ({
-              _id: p._id,
-              firstName: p.personal?.firstName,
-              lastName: p.personal?.lastName,
-              email: p.personal?.email
-            }))
+  const { data: allUsersData, isLoading: isLoadingUsers } = useQuery({
+    queryKey: ["allStudentsList", user?._id],
+    queryFn: async () => {
+      const usersResponse = await studentApi.getAllStudents();
+      if (usersResponse?.data) {
+        return usersResponse.data
+          .filter(u => u._id !== user._id)
+          .map(u => ({
+            _id: u._id,
+            personal: u.personal,
+            academic: u.academic
           }));
-          setConversations(formattedConversations);
-        }
-      } catch (error) {
-        console.error('Error loading sidebar data:', error);
-        setCommunities([]);
-        setConversations([]);
-        setAllUsers([]);
-      } finally {
-        setLoading(false);
       }
-    };
+      return [];
+    },
+    enabled: !!user?._id,
+  });
 
-    loadData();
-  }, [user]);
+  const { data: conversationsData, isLoading: isLoadingConversations } = useQuery({
+    queryKey: ["userConversationsList", user?._id],
+    queryFn: async () => {
+      const convResponse = await MessageAPI.getUserConversations();
+      if (convResponse?.data) {
+        return convResponse.data.map(conv => ({
+          ...conv,
+          participants: conv.participants.map(p => ({
+            _id: p._id,
+            firstName: p.personal?.firstName,
+            lastName: p.personal?.lastName,
+            email: p.personal?.email
+          }))
+        }));
+      }
+      return [];
+    },
+    enabled: !!user?._id,
+  });
 
-  // Add socket listener for real-time conversation updates
+  useEffect(() => {
+    if (communitiesData) {
+      setCommunities(communitiesData);
+    }
+  }, [communitiesData]);
+
+  useEffect(() => {
+    if (allUsersData) {
+      setAllUsers(allUsersData);
+    }
+  }, [allUsersData]);
+
+  useEffect(() => {
+    if (conversationsData) {
+      setConversations(conversationsData);
+    }
+  }, [conversationsData]);
+
   useEffect(() => {
     if (!socket) return;
 
@@ -116,15 +116,8 @@ const MessageSidebar = ({ onSelect }) => {
             lastMessage: message.content,
             lastMessageAt: new Date().toISOString()
           };
-          // Sort to bring updated conversation to the top
           return updated.sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
         }
-
-        // If conversation doesn't exist, fetch it (needs API endpoint)
-        // For now, we might rely on the 'new-conversation' event
-        // const fetchNewConversation = async () => { ... }
-        // fetchNewConversation();
-
         return prev;
       });
     };
@@ -132,18 +125,17 @@ const MessageSidebar = ({ onSelect }) => {
     const handleNewConversation = (conversation) => {
       setConversations(prev => {
         const exists = prev.some(c => c._id === conversation._id);
-        if (exists) return prev; // Avoid duplicates
-        // Format incoming conversation
+        if (exists) return prev;
+        
         const formattedConversation = {
           ...conversation,
-           participants: conversation.participants.map(p => ({
+          participants: conversation.participants.map(p => ({
             _id: p._id,
             firstName: p.personal?.firstName,
             lastName: p.personal?.lastName,
             email: p.personal?.email
           }))
         };
-        // Add and sort
         return [...prev, formattedConversation].sort((a, b) => new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0));
       });
     };
@@ -160,82 +152,32 @@ const MessageSidebar = ({ onSelect }) => {
   const handleCreateCommunity = async (e) => {
     e.preventDefault();
     try {
-      // Create FormData object
       const formData = new FormData();
-      
-      // Add required fields
       formData.append('name', newCommunity.name);
       formData.append('description', newCommunity.description);
-      
-      // Add image if exists
       if (newCommunity.image) {
         formData.append('image', newCommunity.image);
       }
 
-      console.log("Creating community with data:", {
-        name: newCommunity.name,
-        description: newCommunity.description,
-        image: newCommunity.image ? 'File exists' : 'No image'
-      });
-
       const response = await MessageAPI.createCommunity(formData);
-      
-      // Check if response has the expected format
       if (response && response.community) {
-        // Add the new community to the list immediately
         setCommunities(prev => {
-          // Check if community already exists
           const exists = prev.some(comm => comm._id === response.community._id);
           if (exists) return prev;
-          
-          // Add new community to the beginning of the list
           return [response.community, ...prev];
-        }); 
-        
-        // Reset form
+        });
         setShowCommunityForm(false);
         setNewCommunity({ name: "", description: "", image: null });
-        
-        // Show success message
         toast.success("Community created successfully!");
       } else {
         throw new Error("Failed to create community: Invalid response format");
       }
     } catch (error) {
-      console.error("Failed to create community:", error);
-      // Show error message
       toast.error(error.response?.data?.error || error.message || "Failed to create community");
     }
   };
 
-  const handleSendInvitation = async (user) => {
-    if (!selectedCommunity) {
-        console.error("No community selected to send invitation.");
-        return;
-    }
-
-    try {
-        const data = await MessageAPI.sendInvitation({
-            communityId: selectedCommunity._id,
-            userId: user._id,
-            senderType: user.role || 'Student',
-            senderName: `${user.personal?.firstName || ''} ${user.personal?.lastName || ''}`
-        });
-
-        console.log("✅ Invitation sent:", data);
-
-        if (!socket) {
-            console.warn("⚠️ Socket not connected, skipping emit.");
-            return;
-        }
-
-        socket.emit("invitation-sent", { recipient: user._id });
-        alert("Invitation sent successfully!");
-    } catch (error) {
-        console.error("❌ Failed to send invitation:", error);
-        alert("Failed to send invitation: " + (error.response?.data?.message || error.message));
-    }
-  };
+  const loading = isLoadingCommunities || isLoadingUsers || isLoadingConversations;
 
   return (
     <div className="h-full w-80 overflow-y-auto flex flex-col">
@@ -357,7 +299,6 @@ const MessageSidebar = ({ onSelect }) => {
                               alt={community.name}
                               className="rounded-full w-full h-full object-cover"
                               onError={(e) => {
-                                console.error("Failed to load image:", community.image);
                                 e.target.onerror = null;
                                 e.target.style.display = 'none';
                                 e.target.parentNode.innerHTML = 
@@ -383,14 +324,13 @@ const MessageSidebar = ({ onSelect }) => {
               )
               : (
                 <div className="space-y-2">
-                  {/* Show all users */}
                   {allUsers.map((user) => (
                     <div
                       key={user._id}
                       onClick={() => onSelect({
                         type: "direct",
                         participants: [user],
-                        _id: user._id // Use user ID as conversation ID for new chats
+                        _id: user._id 
                       })}
                       className="flex items-center gap-3 p-2 hover:bg-accent rounded cursor-pointer"
                     >

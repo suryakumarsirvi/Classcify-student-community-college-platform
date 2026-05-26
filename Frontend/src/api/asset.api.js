@@ -1,7 +1,7 @@
 import api from './axios';
 
 const assetApi = {
-  // Create new asset
+  
   createAsset: async (formData) => {
     try {
       const response = await api.post('/api/assets', formData, {
@@ -15,7 +15,7 @@ const assetApi = {
     }
   },
 
-  // Get all assets with filters
+  
   getAssets: async (filters = {}) => {
     try {
       const params = new URLSearchParams();
@@ -30,7 +30,7 @@ const assetApi = {
     }
   },
 
-  // Get user's assets
+  
   getUserAssets: async () => {
     try {
       const response = await api.get('/api/assets/my-assets');
@@ -40,7 +40,7 @@ const assetApi = {
     }
   },
 
-  // Download asset
+  
   downloadAsset: async (assetId) => {
     try {
       const response = await api.get(`/api/assets/${assetId}/download`);
@@ -50,7 +50,7 @@ const assetApi = {
     }
   },
 
-  // Toggle favorite
+  
   toggleFavorite: async (assetId) => {
     try {
       const response = await api.post(`/api/assets/${assetId}/favorite`);
@@ -60,7 +60,7 @@ const assetApi = {
     }
   },
 
-  // Get asset stats
+  
   getStats: async () => {
     try {
       const [assets, downloads, favorites] = await Promise.all([

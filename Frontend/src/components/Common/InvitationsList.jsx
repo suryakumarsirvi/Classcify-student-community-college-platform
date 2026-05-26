@@ -1,4 +1,4 @@
-// components/InvitationsList.jsx
+
 import React, { useEffect, useState } from 'react';
 import { CommunityAPI } from '@/api/message.api';
 

@@ -1,11 +1,11 @@
 import api from "./axios";
 
-// Consolidate all message and community related functions under one export
+
 export const MessageAPI = {
-    // Community Related APIs
+    
     createCommunity: async (formData) => {
         try {
-            // Get the current user's token
+            
             const token = localStorage.getItem('adminToken') ||
                 localStorage.getItem('teacherToken') ||
                 localStorage.getItem('studentToken');
@@ -14,7 +14,7 @@ export const MessageAPI = {
                 throw new Error("No authentication token found. Please log in.");
             }
 
-            // Get user info from token
+            
             const userToken = token.split('.')[1];
             const userData = JSON.parse(atob(userToken));
 
@@ -25,12 +25,12 @@ export const MessageAPI = {
             const userId = userData.id;
             const userRole = userData.role || 'student';
 
-            // Validate required fields
+            
             if (!formData.get('name')) {
                 throw new Error("Community name is required");
             }
 
-            // Create member and admin objects with proper structure
+            
             const memberObj = {
                 user: {
                     _id: userId,
@@ -40,7 +40,7 @@ export const MessageAPI = {
                 joinedAt: new Date().toISOString()
             };
 
-            // Add required fields to FormData
+            
             formData.append('creator', userId);
             formData.append('creatorRole', userRole);
             formData.append('members', JSON.stringify([memberObj]));
@@ -49,7 +49,7 @@ export const MessageAPI = {
             formData.append('updatedAt', new Date().toISOString());
 
             console.log("Creating community with formData:", formData);
-            // Log form data contents
+            
             for (let pair of formData.entries()) {
                 console.log(pair[0] + ': ' + pair[1]);
             }
@@ -170,10 +170,10 @@ export const MessageAPI = {
         }
     },
 
-    // Message Related APIs
+    
     sendCommunityMessage: async (communityId, messageData) => {
         try {
-            // First check if community exists and get its details
+            
             const communityResponse = await api.get(`/api/messages/communities/${communityId}`);
             const community = communityResponse.data;
 
@@ -181,19 +181,19 @@ export const MessageAPI = {
                 throw new Error("Community not found");
             }
 
-            // Get the current user's token
+            
             const token = localStorage.getItem('adminToken') ||
                 localStorage.getItem('teacherToken') ||
                 localStorage.getItem('studentToken');
 
-            // Check if user is admin, member, or creator
+            
             const userId = messageData.sender;
             const isAdmin = community.admins?.some(admin => admin._id === userId);
             const isMember = community.members?.some(member => member._id === userId);
             const isCreator = community.creator?._id === userId;
 
             if (!isAdmin && !isMember && !isCreator) {
-                // If not a member, send join request
+                
                 try {
                     await api.post(`/api/messages/communities/${communityId}/request`, {
                         userId: userId,
@@ -210,20 +210,20 @@ export const MessageAPI = {
                 }
             }
 
-            // Prepare complete message data with all required fields
+            
             const completeMessageData = {
                 content: messageData.content,
                 sender: messageData.sender,
-                conversation: communityId, // Add conversation field
-                senderType: messageData.senderType || 'student', // Ensure senderType is present
-                senderName: messageData.senderName || 'Unknown User', // Ensure senderName is present
-                timestamp: new Date().toISOString(), // Add timestamp
-                isAdmin: isAdmin || isCreator // Set isAdmin flag
+                conversation: communityId, 
+                senderType: messageData.senderType || 'student', 
+                senderName: messageData.senderName || 'Unknown User', 
+                timestamp: new Date().toISOString(), 
+                isAdmin: isAdmin || isCreator 
             };
 
             console.log("Sending message with data:", completeMessageData);
 
-            // Now send the message
+            
             const response = await api.post(
                 `/api/messages/community/${communityId}`,
                 completeMessageData,
@@ -285,7 +285,7 @@ export const MessageAPI = {
         }
     },
 
-    // Conversation Related APIs
+    
     createConversation: async (data) => {
         try {
             const response = await api.post('/api/messages/conversations', data);
@@ -296,7 +296,7 @@ export const MessageAPI = {
         }
     },
 
-    // Get all conversations for the current user
+    
     getUserConversations: async () => {
         try {
             const response = await api.get('/api/messages/conversations');

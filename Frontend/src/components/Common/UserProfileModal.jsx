@@ -23,7 +23,7 @@ const UserProfileModal = ({ user, isOpen, onClose, userPosts = [] }) => {
   const interests = other?.interests || [];
   const personalityType = other?.personalityType || "Not specified";
 
-  // Personality traits mapping based on Type A/B
+  
   const personalityTraits = {
     "Type A Extrovert": {
       "Competitive": 85,
@@ -55,7 +55,7 @@ const UserProfileModal = ({ user, isOpen, onClose, userPosts = [] }) => {
     }
   }[personalityType] || {};
 
-  console.log("User Posts in Modal:", userPosts); // Debug log
+  console.log("User Posts in Modal:", userPosts); 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -66,7 +66,7 @@ const UserProfileModal = ({ user, isOpen, onClose, userPosts = [] }) => {
 
         <ScrollArea className="h-full pr-4">
           <div className="space-y-6">
-            {/* Basic Info */}
+            {}
             <Card>
               <CardHeader className="flex flex-row items-start gap-4">
                 <Avatar className="h-20 w-20">

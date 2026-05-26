@@ -25,9 +25,9 @@ const ChatInput = ({ newMessage, setNewMessage, sendMessage }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (newMessage.trim() || file) {
-      sendMessage(newMessage, file); // Send both text & file
+      sendMessage(newMessage, file); 
       setNewMessage("");
-      setFile(null); // Reset file after sending
+      setFile(null); 
     }
   };
 
@@ -44,7 +44,7 @@ const ChatInput = ({ newMessage, setNewMessage, sendMessage }) => {
 
   return (
     <div className="border-t p-4 bg-background">
-      {/* File Preview Card */}
+      {}
       {file && (
         <div className="mb-2 flex items-center justify-between bg-gray-100 p-2 rounded-md text-sm">
           <span>{file.name}</span>
@@ -55,7 +55,7 @@ const ChatInput = ({ newMessage, setNewMessage, sendMessage }) => {
       )}
 
       <div className="flex items-center gap-2 relative">
-        {/* Emoji Picker Button */}
+        {}
         <Button
           variant="ghost"
           size="icon"
@@ -64,7 +64,7 @@ const ChatInput = ({ newMessage, setNewMessage, sendMessage }) => {
           <Smile className="h-5 w-5 text-muted-foreground" />
         </Button>
 
-        {/* Emoji Picker Dropdown */}
+        {}
         {showEmojiPicker && (
           <div
             ref={emojiPickerRef}
@@ -74,7 +74,7 @@ const ChatInput = ({ newMessage, setNewMessage, sendMessage }) => {
           </div>
         )}
 
-        {/* File Upload Button */}
+        {}
         <label className="cursor-pointer">
           <Paperclip className="h-5 w-5 text-muted-foreground" />
           <input type="file" className="hidden" onChange={handleFileUpload} />
@@ -90,7 +90,7 @@ const ChatInput = ({ newMessage, setNewMessage, sendMessage }) => {
           placeholder="Type a message..."
         />
 
-        {/* Send Button */}
+        {}
         <Button onClick={handleSubmit} size="icon">
           <Send className="h-5 w-5" />
         </Button>

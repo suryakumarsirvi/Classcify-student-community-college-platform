@@ -1,29 +1,25 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AdminSidebar from "@/components/Common/AdminSidebar";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
 import { cn } from "@/lib/utils";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 
 const AdminDashboardLayout = () => {
-  // Get initial state from localStorage or default to true
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(() => {
-    const savedState = localStorage.getItem('adminSidebarExpanded');
-    // Only use saved state if it exists and is "false", otherwise default to true
+    const savedState = localStorage.getItem("adminSidebarExpanded");
     return savedState === "false" ? false : true;
   });
   
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem("adminToken");
     if (!token) {
-      navigate('/admin/login');
+      navigate("/admin/login");
     }
   }, [navigate]);
 
-  // Save sidebar state to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('adminSidebarExpanded', isSidebarExpanded);
+    localStorage.setItem("adminSidebarExpanded", isSidebarExpanded);
   }, [isSidebarExpanded]);
 
   const toggleSidebar = () => {
@@ -36,11 +32,11 @@ const AdminDashboardLayout = () => {
       <div
         className={cn(
           "transition-all duration-300",
-          isSidebarExpanded ? "pl-64" : "pl-20",
+          isSidebarExpanded ? "pl-64" : "pl-20"
         )}
       >
         <main className="p-4">
-          <Outlet/>
+          <Outlet />
         </main>
       </div>
     </div>

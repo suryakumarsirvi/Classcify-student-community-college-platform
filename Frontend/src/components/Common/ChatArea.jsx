@@ -1,4 +1,4 @@
-// components/ChatArea.jsx
+
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import useSocket from "@/hooks/useSocket";
@@ -52,7 +52,7 @@ export const ChatArea = ({
       return;
     }
 
-    // Determine if it's a direct message or community message
+    
     if (selectedConversation.type === "direct") {
       const otherParticipant = selectedConversation?.participants?.find(
         (p) => p._id !== user._id
@@ -80,7 +80,7 @@ export const ChatArea = ({
       }
     } else if (selectedConversation.type === "community") {
       try {
-        // Prepare message data with required fields
+        
         const messageData = {
           content: newMessage,
           sender: user._id,
@@ -106,7 +106,7 @@ export const ChatArea = ({
         }
       } catch (error) {
         console.error("Error sending community message:", error);
-        // Show error to user if needed
+        
       }
     } else {
       console.error("Unknown conversation type:", selectedConversation.type);
@@ -189,7 +189,7 @@ export const ChatArea = ({
 
   return (
     <div className="flex-1 mt-12 h-[90%] flex flex-col border rounded-lg overflow-hidden">
-      {/* Agar koi chat select nahi hai toh yeh message dikhao */}
+      {}
       {!selectedConversation
         ? (
           <div className="flex-1 flex items-center justify-center text-gray-500">
@@ -198,10 +198,10 @@ export const ChatArea = ({
         )
         : (
           <>
-            {/* Header */}
+            {}
             <div className="border-b p-2 bg-background flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {/* Profile Icon */}
+                {}
                 <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
                   {selectedConversation?.type === "community"
                     ? selectedConversation.image
@@ -225,7 +225,7 @@ export const ChatArea = ({
                     )}
                 </div>
 
-                {/* Name and Status */}
+                {}
                 <div>
                   <h4 className="font-semibold text-sm">
                     {selectedConversation?.type === "community"
@@ -245,7 +245,7 @@ export const ChatArea = ({
                 </div>
               </div>
 
-              {/* Add Members Button for Communities */}
+              {}
               {selectedConversation?.type === "community" && (
                 <Button
                   onClick={() => setIsSearchOpen(true)}
@@ -261,7 +261,7 @@ export const ChatArea = ({
               )}
             </div>
 
-            {/* Search Dialog */}
+            {}
             {isSearchOpen && (
               <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
                 <div className="bg-white p-4 rounded-lg w-96 shadow-xl">
@@ -377,7 +377,7 @@ export const ChatArea = ({
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Box */}
+            {}
             <ChatInput
               newMessage={newMessage}
               setNewMessage={setNewMessage}

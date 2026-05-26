@@ -45,7 +45,7 @@ const CreateButton = () => {
 
     try {
       const formPayload = new FormData();
-      formPayload.append("media", file); // Make sure this is correct
+      formPayload.append("media", file); 
       formPayload.append("caption", formData.caption);
       formPayload.append("tags", formData.tags);
 
@@ -55,7 +55,7 @@ const CreateButton = () => {
       }
 
       await postApi.createPost(formPayload);
-      // alert("Post created successfully!");
+      
       window.location.reload();
     } catch (error) {
       console.error("🔴 Error creating post:", error);

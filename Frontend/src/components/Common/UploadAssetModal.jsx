@@ -35,10 +35,10 @@ const UploadAssetModal = ({ isOpen, onClose, onUpload }) => {
     e.preventDefault();
     
     try {
-      // Create FormData object
+      
       const data = new FormData();
       
-      // Append all form fields
+      
       data.append('name', formData.name);
       data.append('description', formData.description);
       data.append('subject', formData.subject);
@@ -50,10 +50,10 @@ const UploadAssetModal = ({ isOpen, onClose, onUpload }) => {
       }
       data.append('file', formData.file);
 
-      // Call the onUpload function passed from parent
+      
       await onUpload(data);
       
-      // Reset form
+      
       setFormData({
         name: "",
         description: "",

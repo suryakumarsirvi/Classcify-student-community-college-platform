@@ -25,7 +25,7 @@ const useSocket = () => {
 
     newSocket.on("connect", () => {
       console.log("🔌 Socket connected");
-      // Authenticate user
+      
       newSocket.emit("authenticate", user._id);
     });
 

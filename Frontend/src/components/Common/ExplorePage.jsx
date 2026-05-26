@@ -38,12 +38,12 @@ const ExplorePage = () => {
         try {
           setIsLoading(true);
           
-          // Get the appropriate token
+          
           const token = localStorage.getItem('adminToken') || 
                        localStorage.getItem('teacherToken') || 
                        localStorage.getItem('studentToken');
 
-          // Make direct axios calls with token
+          
           const [usersRes, postsRes] = await Promise.all([
             axios.get(`http://localhost:5000/api/students/search?q=${searchQuery}`, {
               headers: { 'Authorization': `Bearer ${token}` }
@@ -74,7 +74,7 @@ const ExplorePage = () => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        // Get the appropriate token based on user role
+        
         const token = localStorage.getItem('adminToken') || 
                      localStorage.getItem('teacherToken') || 
                      localStorage.getItem('studentToken');
@@ -95,19 +95,19 @@ const ExplorePage = () => {
 
   const handlePostClick = (post) => {
     setSelectedPost(post);
-    // Get suggested posts based on tags
+    
     const suggested = postResults
       .filter(p => 
-        p._id !== post._id && // Don't include the selected post
-        p.tags.some(tag => post.tags.includes(tag)) // Has at least one matching tag
+        p._id !== post._id && 
+        p.tags.some(tag => post.tags.includes(tag)) 
       )
       .sort((a, b) => {
-        // Sort by number of matching tags
+        
         const aMatches = a.tags.filter(tag => post.tags.includes(tag)).length;
         const bMatches = b.tags.filter(tag => post.tags.includes(tag)).length;
         return bMatches - aMatches;
       })
-      .slice(0, 6); // Get top 6 suggestions
+      .slice(0, 6); 
     setSuggestedPosts(suggested);
   };
 
@@ -149,9 +149,9 @@ const ExplorePage = () => {
             />
           )}
 
-          {/* Overlay on hover */}
+          {}
           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-200 p-4 flex flex-col justify-between">
-            {/* Author info */}
+            {}
             <div className="flex items-center">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary/10 text-white">

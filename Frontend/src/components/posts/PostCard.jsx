@@ -149,7 +149,7 @@ const PostCard = ({ post }) => {
           </Button>
           <div className="flex-1" />
           <Button variant="ghost" size="sm" className="p-2 text-zinc-500">
-            <Bookmark size={26} /> {/* Increased size from 20 to 26 */}
+            <Bookmark size={26} /> {}
           </Button>
         </div>
       </div>
