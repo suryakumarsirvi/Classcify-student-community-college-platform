@@ -116,7 +116,6 @@ class StudentService {
     }
 
     return await Assignment.find({
-      collegeName: student.academic.collegeName,
       course: student.academic.course,
       dueDate: { $gte: new Date() }
     }).sort({ dueDate: 1 });
@@ -129,7 +128,6 @@ class StudentService {
     }
 
     return await Announcement.find({
-      collegeName: student.academic.collegeName,
       $or: [
         { course: student.academic.course },
         { course: { $exists: false } },

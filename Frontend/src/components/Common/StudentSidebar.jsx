@@ -36,6 +36,7 @@ import {
   MessageSquare,
   Moon,
   PanelLeft,
+  Plus,
   Settings,
   Sun,
   X,
@@ -92,6 +93,12 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
       path: "/student/dashboard/attendance",
     },
     {
+      id: "community",
+      label: "Communities",
+      icon: Globe,
+      path: "/student/dashboard/community",
+    },
+    {
       id: "messages",
       label: "Messages",
       icon: MessageSquare,
@@ -108,6 +115,12 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
       label: "Assets",
       icon: LayoutDashboardIcon,
       path: "/student/dashboard/assets",
+    },
+    {
+      id: "create",
+      label: "Create Space",
+      icon: Plus,
+      path: "/student/dashboard/create",
     },
   ];
 

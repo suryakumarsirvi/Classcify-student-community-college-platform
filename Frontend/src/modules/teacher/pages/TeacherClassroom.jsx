@@ -58,7 +58,31 @@ const TeacherClassroom = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const { register, handleSubmit, reset, setValue, control } = useForm();
+
+  const timetableForm = useForm();
+  const assignmentForm = useForm();
+  const announcementForm = useForm();
+
+  const {
+    register: registerTimetable,
+    handleSubmit: handleSubmitTimetable,
+    reset: resetTimetable,
+    setValue: setValueTimetable,
+  } = timetableForm;
+
+  const {
+    register: registerAssignment,
+    handleSubmit: handleSubmitAssignment,
+    reset: resetAssignment,
+    control: controlAssignment,
+  } = assignmentForm;
+
+  const {
+    register: registerAnnouncement,
+    handleSubmit: handleSubmitAnnouncement,
+    reset: resetAnnouncement,
+    control: controlAnnouncement,
+  } = announcementForm;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -165,14 +189,14 @@ const TeacherClassroom = () => {
     try {
       const newAssignment = await teacherService.createAssignment(data);
 
-      if (!newAssignment.data || !newAssignment.data.assignment) {
+      if (!newAssignment || !newAssignment.assignment) {
         toast.error("Invalid assignment data received!");
         return;
       }
 
-      setAssignments([...assignments, newAssignment.data.assignment]);
+      setAssignments([...assignments, newAssignment.assignment]);
       toast.success("Assignment created successfully");
-      reset();
+      resetAssignment();
     } catch (err) {
       toast.error("Failed to create assignment");
     }
@@ -189,7 +213,7 @@ const TeacherClassroom = () => {
 
       setAnnouncements(prev => [...prev, newAnnouncement.announcement]);
       toast.success("Announcement created successfully");
-      reset();
+      resetAnnouncement();
     } catch (err) {
       toast.error("Failed to create announcement");
     }
@@ -199,8 +223,8 @@ const TeacherClassroom = () => {
     try {
       const formattedData = {
         ...data,
-        startTime: data.startTime,
-        endTime: data.endTime,
+        startTime: new Date(data.startTime).toISOString(),
+        endTime: new Date(data.endTime).toISOString(),
       };
 
       const response = await teacherService.createTimetable(formattedData);
@@ -212,7 +236,7 @@ const TeacherClassroom = () => {
 
       setTimetable(prev => [...prev, response.data.timetable]);
       toast.success("Timetable created successfully");
-      reset();
+      resetTimetable();
     } catch (error) {
       toast.error("Failed to create timetable");
     }
@@ -349,17 +373,17 @@ const TeacherClassroom = () => {
                 </CardHeader>
                 <CardContent>
                   <form
-                    onSubmit={handleSubmit(handleCreateTimetable)}
+                    onSubmit={handleSubmitTimetable(handleCreateTimetable)}
                     className="space-y-4"
                   >
                     <div className="space-y-2">
                       <Label>Subject</Label>
-                      <Input {...register("subject")} required />
+                      <Input {...registerTimetable("subject")} required />
                     </div>
                     <div className="space-y-2">
                       <Label>Course</Label>
                       <Select
-                        onValueChange={(value) => setValue("course", value)}
+                        onValueChange={(value) => setValueTimetable("course", value)}
                         required
                       >
                         <SelectTrigger>
@@ -367,8 +391,8 @@ const TeacherClassroom = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {courses.map((course) => (
-                            <SelectItem key={course} value={course}>
-                              {course}
+                            <SelectItem key={course?._id || course} value={course?.name || course}>
+                              {course?.name || course}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -376,16 +400,16 @@ const TeacherClassroom = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Start Time</Label>
+                        <Label>Start Date & Time</Label>
                         <Input
-                          type="time"
-                          {...register("startTime")}
+                          type="datetime-local"
+                          {...registerTimetable("startTime")}
                           required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>End Time</Label>
-                        <Input type="time" {...register("endTime")} required />
+                        <Label>End Date & Time</Label>
+                        <Input type="datetime-local" {...registerTimetable("endTime")} required />
                       </div>
                     </div>
                     <Button type="submit" className="w-full cursor-pointer">
@@ -473,18 +497,18 @@ const TeacherClassroom = () => {
                 </CardHeader>
                 <CardContent>
                   <form
-                    onSubmit={handleSubmit(handleCreateAssignment)}
+                    onSubmit={handleSubmitAssignment(handleCreateAssignment)}
                     className="space-y-4"
                   >
                     <div className="space-y-2">
                       <Label>Title</Label>
-                      <Input {...register("title")} required />
+                      <Input {...registerAssignment("title")} required />
                     </div>
                     <div className="space-y-2">
                       <Label>Course</Label>
                       <Controller
                         name="course"
-                        control={control}
+                        control={controlAssignment}
                         defaultValue=""
                         render={({ field }) => (
                           <Select
@@ -511,13 +535,13 @@ const TeacherClassroom = () => {
                       <Label>Due Date</Label>
                       <Input
                         type="datetime-local"
-                        {...register("dueDate")}
+                        {...registerAssignment("dueDate")}
                         required
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Description</Label>
-                      <Textarea {...register("description")} rows={4} />
+                      <Textarea {...registerAssignment("description")} rows={4} />
                     </div>
                     <Button type="submit" className="w-full">
                       <BookOpen className="mr-2 h-4 w-4" />
@@ -573,16 +597,13 @@ const TeacherClassroom = () => {
                 </CardHeader>
                 <CardContent>
                   <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleSubmit(handleCreateAnnouncement)(e);
-                    }}
+                    onSubmit={handleSubmitAnnouncement(handleCreateAnnouncement)}
                     className="space-y-4"
                   >
                     <div className="space-y-2">
                       <Label>Title</Label>
                       <Input
-                        {...register("title", {
+                        {...registerAnnouncement("title", {
                           required: "Title is required",
                         })}
                       />
@@ -591,7 +612,7 @@ const TeacherClassroom = () => {
                       <Label>Course</Label>
                       <Controller
                         name="course"
-                        control={control}
+                        control={controlAnnouncement}
                         rules={{ required: "Course is required" }}
                         render={({ field }) => (
                           <Select
@@ -615,7 +636,7 @@ const TeacherClassroom = () => {
                     <div className="space-y-2">
                       <Label>Content</Label>
                       <Textarea
-                        {...register("content", {
+                        {...registerAnnouncement("content", {
                           required: "Content is required",
                         })}
                         rows={4}

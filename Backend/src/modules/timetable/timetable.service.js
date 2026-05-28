@@ -19,6 +19,14 @@ class TimetableService {
   async getTimetable(teacherId) {
     return await timetableRepository.findByTeacher(teacherId);
   }
+
+  async getStudentTimetable(student) {
+    const course = student.academic?.course;
+    if (!course) {
+      return [];
+    }
+    return await timetableRepository.findByCourse(course);
+  }
 }
 
 export default new TimetableService();

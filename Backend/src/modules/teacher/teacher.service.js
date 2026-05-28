@@ -153,7 +153,7 @@ class TeacherService {
   async getClassroomStudents(classroom) {
     const students = await Student.find({
       'academic.course': classroom
-    }).select('name roll email academic');
+    }).select('personal academic');
 
     return students || [];
   }

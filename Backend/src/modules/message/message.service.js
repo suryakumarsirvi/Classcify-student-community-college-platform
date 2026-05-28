@@ -92,12 +92,20 @@ class MessageService {
       throw new ApiError(400, 'An invitation is already pending for this user');
     }
 
+    const capitalizeRole = (role) => {
+      if (!role) return 'Student';
+      const r = role.toLowerCase();
+      if (r === 'admin') return 'Admin';
+      if (r === 'teacher') return 'Teacher';
+      return 'Student';
+    };
+
     const newInvitation = await messageRepository.createInvitation({
       community: communityId,
       sender: senderId,
-      senderType: senderRole || 'Student',
+      senderType: capitalizeRole(senderRole),
       recipient: recipientId,
-      recipientType: recipientRole || 'Student',
+      recipientType: capitalizeRole(recipientRole),
       status: 'pending'
     });
 
@@ -471,9 +479,17 @@ class MessageService {
       community.pendingJoinRequests = [];
     }
 
+    const capitalizeRole = (role) => {
+      if (!role) return 'Student';
+      const r = role.toLowerCase();
+      if (r === 'admin') return 'Admin';
+      if (r === 'teacher') return 'Teacher';
+      return 'Student';
+    };
+
     community.pendingJoinRequests.push({
       user: userId,
-      userType: userType || 'Student',
+      userType: capitalizeRole(userType),
       status: 'pending',
       createdAt: new Date()
     });

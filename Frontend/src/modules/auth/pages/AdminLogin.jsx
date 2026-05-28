@@ -25,7 +25,7 @@ export default function AdminAuth() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    toast.loading(isLogin ? "Logging in..." : "Creating admin account... ⏳");
+    const toastId = toast.loading(isLogin ? "Logging in..." : "Creating admin account... ⏳");
 
     try {
       const endpoint = isLogin ? "/api/admin/login" : "/api/admin/init";
@@ -35,6 +35,7 @@ export default function AdminAuth() {
         throw new Error("No token received from server");
       }
 
+      toast.dismiss(toastId);
       toast.success(
         isLogin ? "Login successful! 🎉" : "Admin Created Successfully! ✅"
       );
@@ -49,10 +50,11 @@ export default function AdminAuth() {
         setIsLogin(true);
       }
     } catch (err) {
+      toast.dismiss(toastId);
       const errorMessage =
-        err.response?.data?.msg ||
-        err.response?.data?.error ||
-        err.message ||
+        err?.originalError?.response?.data?.msg ||
+        err?.originalError?.response?.data?.error ||
+        err?.message ||
         "Something went wrong!";
       toast.error(`❌ Error: ${errorMessage}`);
     } finally {

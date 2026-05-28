@@ -35,6 +35,7 @@ import {
   MessageSquare,
   Moon,
   PanelLeft,
+  PlusCircle,
   Settings,
   Sun,
   X,
@@ -96,7 +97,13 @@ const TeacherSidebar = ({ isExpanded, toggle }) => {
       label: "Messages",
       icon: MessageSquare,
       path: "/teacher/dashboard/messages",
-    }
+    },
+    {
+      id: "create",
+      label: "Create Hub",
+      icon: PlusCircle,
+      path: "/teacher/dashboard/create",
+    },
   ];
 
   const handleLogout = () => {

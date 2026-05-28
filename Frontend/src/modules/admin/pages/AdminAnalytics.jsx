@@ -104,36 +104,7 @@ const AdminAnalytics = () => {
     subjectDistribution: [],
     teacherPerformance: []
   });
-  const [tableData, setTableData] = useState([
-    {
-      id: 1,
-      name: "Monthly Performance Report",
-      category: "Performance",
-      date: "2024-04-16",
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "Attendance Analysis",
-      category: "Attendance",
-      date: "2024-04-15",
-      status: "active"
-    },
-    {
-      id: 3,
-      name: "Teacher Evaluation",
-      category: "Teachers",
-      date: "2024-04-14",
-      status: "completed"
-    },
-    {
-      id: 4,
-      name: "Student Progress",
-      category: "Students",
-      date: "2024-04-13",
-      status: "active"
-    }
-  ]);
+  const [tableData, setTableData] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -146,44 +117,41 @@ const AdminAnalytics = () => {
     const fetchAnalyticsData = async () => {
       try {
         setIsLoading(true);
-        const mockData = {
-          stats: [
-            { title: "Total Students", value: "1,245", change: "+12%", icon: Users },
-            { title: "Active Classes", value: "45", change: "+5%", icon: BookOpen },
-            { title: "Average Attendance", value: "92%", change: "+3%", icon: CheckCircle },
-            { title: "Assignments Completed", value: "1,856", change: "+8%", icon: ClipboardList }
-          ],
-          attendance: [
-            { name: "Mon", present: 95, absent: 5 },
-            { name: "Tue", present: 92, absent: 8 },
-            { name: "Wed", present: 90, absent: 10 },
-            { name: "Thu", present: 94, absent: 6 },
-            { name: "Fri", present: 96, absent: 4 }
-          ],
-          performance: [
-            { name: "Jan", score: 75 },
-            { name: "Feb", score: 82 },
-            { name: "Mar", score: 78 },
-            { name: "Apr", score: 85 },
-            { name: "May", score: 88 }
-          ],
-          subjectDistribution: [
-            { name: "Mathematics", value: 30 },
-            { name: "Science", value: 25 },
-            { name: "English", value: 20 },
-            { name: "History", value: 15 },
-            { name: "Computer", value: 10 }
-          ],
-          teacherPerformance: [
-            { name: "Rahul Sharma", rating: 4.8, students: 45 },
-            { name: "Priya Patel", rating: 4.9, students: 50 },
-            { name: "Amit Kumar", rating: 4.7, students: 42 },
-            { name: "Sneha Gupta", rating: 4.6, students: 38 }
-          ]
-        };
-        setAnalyticsData(mockData);
+        
+        // Fetch all analytics data concurrently
+        const [statsRes, chartRes, reportsRes] = await Promise.all([
+          api.get("/api/admin/analytics/stats").catch(() => ({ data: [] })),
+          api.get("/api/admin/analytics/chart").catch(() => ({ data: {} })),
+          api.get("/api/admin/analytics/reports").catch(() => ({ data: [] }))
+        ]);
+
+        const rawStats = statsRes.data || [];
+        const rawChart = chartRes.data || {};
+        
+        // Map backend stats to icons
+        const mappedStats = Array.isArray(rawStats) && rawStats.length > 0 ? rawStats.map(stat => ({
+          ...stat,
+          icon: stat.title.includes("Student") ? Users :
+                stat.title.includes("Class") ? BookOpen :
+                stat.title.includes("Attend") ? CheckCircle : ClipboardList
+        })) : [
+          { title: "Total Students", value: "0", change: "0%", icon: Users },
+          { title: "Active Classes", value: "0", change: "0%", icon: BookOpen },
+          { title: "Average Attendance", value: "0%", change: "0%", icon: CheckCircle },
+          { title: "Assignments Completed", value: "0", change: "0%", icon: ClipboardList }
+        ];
+
+        setAnalyticsData({
+          stats: mappedStats,
+          attendance: rawChart.attendance || [],
+          performance: rawChart.performance || [],
+          subjectDistribution: rawChart.subjectDistribution || [],
+          teacherPerformance: rawChart.teacherPerformance || []
+        });
+
+        setTableData(Array.isArray(reportsRes.data) ? reportsRes.data : []);
       } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch analytics data", error);
       } finally {
         setIsLoading(false);
       }
@@ -205,6 +173,13 @@ const AdminAnalytics = () => {
       setTableData(reportsRes.data);
       
       setIsDialogOpen(false);
+      setFormData({
+        title: "",
+        category: "",
+        description: "",
+        date: new Date(),
+        status: "active",
+      });
     } catch (error) {
       console.error(error);
     }
@@ -213,7 +188,6 @@ const AdminAnalytics = () => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/api/admin/analytics/reports/${id}`);
-      
       const reportsRes = await api.get("/api/admin/analytics/reports");
       setTableData(reportsRes.data);
     } catch (error) {
@@ -222,7 +196,10 @@ const AdminAnalytics = () => {
   };
 
   const handleEdit = (item) => {
-    setFormData(item);
+    setFormData({
+      ...item,
+      date: item.date ? new Date(item.date) : new Date()
+    });
     setIsDialogOpen(true);
   };
 
@@ -264,8 +241,8 @@ const AdminAnalytics = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <Badge variant={stat.change.startsWith("+") ? "success" : "destructive"}>
-                  {stat.change}
+                <Badge variant={stat.change && String(stat.change).startsWith("+") ? "success" : "destructive"}>
+                  {stat.change || "0%"}
                 </Badge>
               </div>
             </CardContent>
@@ -280,20 +257,24 @@ const AdminAnalytics = () => {
             <CardDescription>Student attendance trends</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={analyticsData.attendance}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="present" fill="#22c55e" name="Present" />
-                <Bar dataKey="absent" fill="#ef4444" name="Absent" />
-              </BarChart>
-            </ResponsiveContainer>
+            {analyticsData.attendance.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={analyticsData.attendance}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="present" fill="#22c55e" name="Present" />
+                  <Bar dataKey="absent" fill="#ef4444" name="Absent" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-muted-foreground">No attendance data available</div>
+            )}
           </CardContent>
         </Card>
 
@@ -303,19 +284,23 @@ const AdminAnalytics = () => {
             <CardDescription>Average student performance</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={analyticsData.performance}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="score" stroke="#2563eb" name="Score" />
-              </LineChart>
-            </ResponsiveContainer>
+            {analyticsData.performance.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={analyticsData.performance}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="score" stroke="#2563eb" name="Score" />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-muted-foreground">No performance data available</div>
+            )}
           </CardContent>
         </Card>
 
@@ -325,26 +310,30 @@ const AdminAnalytics = () => {
             <CardDescription>Student enrollment by subject</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={analyticsData.subjectDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {analyticsData.subjectDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+            {analyticsData.subjectDistribution.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={analyticsData.subjectDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {analyticsData.subjectDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-muted-foreground">No subject distribution data available</div>
+            )}
           </CardContent>
         </Card>
 
@@ -354,25 +343,29 @@ const AdminAnalytics = () => {
             <CardDescription>Teacher ratings and student count</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {analyticsData.teacherPerformance.map((teacher, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{teacher.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {teacher.students} students
-                      </p>
+            {analyticsData.teacherPerformance.length > 0 ? (
+              <div className="space-y-4">
+                {analyticsData.teacherPerformance.map((teacher, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <User className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium">{teacher.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {teacher.students} students
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Award className="h-5 w-5 text-yellow-500" />
+                      <span className="font-medium">{teacher.rating}/5.0</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-yellow-500" />
-                    <span className="font-medium">{teacher.rating}/5.0</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center py-8 text-muted-foreground">No teacher performance data available</div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -419,6 +412,10 @@ const AdminAnalytics = () => {
                         <SelectItem value="users">Users</SelectItem>
                         <SelectItem value="finance">Finance</SelectItem>
                         <SelectItem value="marketing">Marketing</SelectItem>
+                        <SelectItem value="Performance">Performance</SelectItem>
+                        <SelectItem value="Attendance">Attendance</SelectItem>
+                        <SelectItem value="Teachers">Teachers</SelectItem>
+                        <SelectItem value="Students">Students</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -465,20 +462,20 @@ const AdminAnalytics = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tableData.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
+              {tableData.length > 0 ? tableData.map((item) => (
+                <TableRow key={item._id || item.id}>
+                  <TableCell>{item.name || item.title}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{item.category}</Badge>
                   </TableCell>
-                  <TableCell>{item.date}</TableCell>
+                  <TableCell>{item.date ? new Date(item.date).toLocaleDateString() : "-"}</TableCell>
                   <TableCell>
                     <Badge
                       variant={item.status === "active"
                         ? "default"
                         : "secondary"}
                     >
-                      {item.status}
+                      {item.status || "active"}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -493,7 +490,7 @@ const AdminAnalytics = () => {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-500"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleDelete(item._id || item.id)}
                         >
                           <Trash className="h-4 w-4 mr-2" />
                           Delete
@@ -502,7 +499,13 @@ const AdminAnalytics = () => {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    No reports found.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
 
@@ -565,9 +568,9 @@ const AdminAnalytics = () => {
                   <AlertCircle className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-medium">New user registration</h4>
+                  <h4 className="font-medium">System Update Completed</h4>
                   <p className="text-sm text-muted-foreground">
-                    2 hours ago - User #2345 registered
+                    {item * 2} hours ago - Routine maintenance check
                   </p>
                 </div>
               </div>

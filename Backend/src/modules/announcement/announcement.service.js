@@ -17,10 +17,7 @@ class AnnouncementService {
 
   async getAnnouncements() {
     const list = await announcementRepository.findAll();
-    if (!list || list.length === 0) {
-      throw new ApiError(404, 'No announcements found');
-    }
-    return list;
+    return list || [];
   }
 }
 

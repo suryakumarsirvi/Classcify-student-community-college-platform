@@ -47,6 +47,7 @@ import {
   Pencil,
 } from "lucide-react";
 import studentService from "@/modules/student/services/student.service";
+import api from "@/services/api";
 import { TailSpin } from "react-loader-spinner";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -64,28 +65,18 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const StudentClassroom = () => {
   const [studentData, setStudentData] = useState(null);
-  const [timetable, setTimetable] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("timetable");
   const [assignments, setAssignments] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [attendanceStats, setAttendanceStats] = useState(null);
-  const [activeSection, setActiveSection] = useState(null);
-  const [studyMaterials, setStudyMaterials] = useState([]);
-  const [academicCalendar, setAcademicCalendar] = useState([]);
   const [resources, setResources] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [timetableData, setTimetableData] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
-  const [loadingStates, setLoadingStates] = useState({
-    studyMaterials: false,
-    timetable: false,
-    attendance: false,
-    profile: false
-  });
 
   const studyMaterialsData = [
     {
@@ -156,162 +147,67 @@ const StudentClassroom = () => {
     }
   ];
 
-  const resourcesData = [
-    {
-      id: 1,
-      title: "Course Syllabus",
-      description: "Complete course syllabus for current semester",
-      type: "Syllabus",
-      fileUrl: "#"
-    },
-    {
-      id: 2,
-      title: "Lab Manuals",
-      description: "All lab experiments and procedures",
-      type: "Manual",
-      fileUrl: "#"
-    },
-    {
-      id: 3,
-      title: "Previous Year Papers",
-      description: "Last 5 years question papers with solutions",
-      type: "Question Bank",
-      fileUrl: "#"
-    }
-  ];
-
-  const dummyTimetable = [
-    {
-      day: "Monday",
-      classes: [
-        { time: "09:00", subject: "Mathematics", room: "A101", teacher: "Dr. Smith" },
-        { time: "10:30", subject: "Physics", room: "B203", teacher: "Prof. Johnson" },
-        { time: "12:00", subject: "Computer Science", room: "C305", teacher: "Dr. Williams" }
-      ]
-    },
-    {
-      day: "Tuesday",
-      classes: [
-        { time: "09:00", subject: "Chemistry", room: "D401", teacher: "Dr. Brown" },
-        { time: "10:30", subject: "English", room: "A102", teacher: "Prof. Davis" },
-        { time: "12:00", subject: "Mathematics", room: "B204", teacher: "Dr. Smith" }
-      ]
-    }
-  ];
-
-  const dummyAttendance = {
-    stats: {
-      totalClasses: 30,
-      present: 25,
-      absent: 3,
-      late: 2,
-      percentage: 83.33
-    },
-    recent: [
-      { date: "2024-04-15", status: "Present", subject: "Mathematics" },
-      { date: "2024-04-14", status: "Late", subject: "Physics" },
-      { date: "2024-04-13", status: "Present", subject: "Computer Science" }
-    ]
-  };
-
-  const dummyAssignments = [
-    {
-      id: 1,
-      subject: "Mathematics",
-      title: "Calculus Assignment",
-      dueDate: "2024-04-20",
-      description: "Solve problems from chapter 5",
-      status: "Pending",
-      marks: 20
-    },
-    {
-      id: 2,
-      subject: "Physics",
-      title: "Lab Report",
-      dueDate: "2024-04-18",
-      description: "Submit quantum mechanics lab observations",
-      status: "Overdue",
-      marks: 15
-    },
-    {
-      id: 3,
-      subject: "Computer Science",
-      title: "Programming Project",
-      dueDate: "2024-04-25",
-      description: "Implement sorting algorithms",
-      status: "Upcoming",
-      marks: 30
-    }
-  ];
-
-  const dummyAnnouncements = [
-    {
-      id: 1,
-      title: "Holiday Announcement",
-      content: "College will remain closed on 15th April for local festival",
-      date: "2024-04-10",
-      type: "General"
-    },
-    {
-      id: 2,
-      title: "Exam Schedule",
-      content: "Mid-term examinations will start from 15th May",
-      date: "2024-04-09",
-      type: "Academic"
-    },
-    {
-      id: 3,
-      title: "Sports Day",
-      content: "Annual sports day will be held on 25th May",
-      date: "2024-04-08",
-      type: "Event"
-    }
-  ];
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [profile, assignments, announcements, attendance] = await Promise.all([
-          studentService.getProfile(),
-          studentService.getAssignments(),
-          studentService.getAnnouncements(),
-          studentService.getMyAttendance(studentData?.academic?.course, new Date().toISOString().split('T')[0], new Date().toISOString().split('T')[0])
-        ]);
-
-        setStudentData(profile.data);
-        setUserProfile(profile.data);
-        setAssignments(assignments?.data?.assignments || []);
-        setAnnouncements(announcements?.data?.announcements || []);
-        setAttendanceStats(attendance?.data?.stats || null);
-      } catch (err) {
-        setError(err.message || "Failed to load classroom data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleRefresh = async () => {
+  const fetchClassroomData = async () => {
     try {
       setLoading(true);
-      const [assignments, announcements, attendance] = await Promise.all([
+      const profile = await studentService.getProfile();
+      const student = profile.data;
+      setStudentData(student);
+      setUserProfile(student);
+
+      const [assignmentsRes, announcementsRes, attendanceRes, resourcesRes, timetableRes] = await Promise.allSettled([
         studentService.getAssignments(),
         studentService.getAnnouncements(),
-        studentService.getMyAttendance(studentData?.academic?.course, new Date().toISOString().split('T')[0], new Date().toISOString().split('T')[0])
+        studentService.getMyAttendance(student?.academic?.course, new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], new Date().toISOString().split('T')[0]),
+        studentService.getResources(),
+        studentService.getTimetable()
       ]);
 
-      setAssignments(assignments?.data?.assignments || []);
-      setAnnouncements(announcements?.data?.announcements || []);
-      setAttendanceStats(attendance?.data?.stats || null);
+      if (assignmentsRes.status === "fulfilled") {
+        setAssignments(assignmentsRes.value?.data?.assignments || assignmentsRes.value?.assignments || []);
+      }
+      if (announcementsRes.status === "fulfilled") {
+        setAnnouncements(announcementsRes.value?.data?.announcements || announcementsRes.value?.announcements || []);
+      }
+      if (attendanceRes.status === "fulfilled") {
+        const data = attendanceRes.value?.data || attendanceRes.value;
+        setAttendanceStats(data?.stats || null);
+      }
+      if (resourcesRes.status === "fulfilled") {
+        setResources(resourcesRes.value?.data?.resources || resourcesRes.value?.resources || []);
+      }
+      if (timetableRes.status === "fulfilled") {
+        setTimetableData(timetableRes.value?.data || timetableRes.value || []);
+      }
+
+      // Also get detailed attendance overview stats
+      try {
+        const detailRes = await api.get("/api/attendance/mystats");
+        if (detailRes?.data) {
+          setAttendanceData(detailRes.data.detailedRecords || []);
+          if (!attendanceStats) {
+            setAttendanceStats(detailRes.data.overallStats || null);
+          }
+        }
+      } catch (err) {
+        console.error("Detailed attendance stats fetch failed:", err);
+      }
+
       setError(null);
     } catch (err) {
-      setError(err.message || "Failed to refresh data");
+      console.error(err);
+      setError(err.message || "Failed to load classroom data");
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchClassroomData();
+  }, []);
+
+  const handleRefresh = async () => {
+    await fetchClassroomData();
   };
 
   const handleButtonClick = (section) => {
@@ -327,35 +223,36 @@ const StudentClassroom = () => {
                 <TabsTrigger value="favorites">Favorites</TabsTrigger>
               </TabsList>
               <TabsContent value="all" className="space-y-4">
-                {studyMaterialsData.map((material, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <BookOpen className="h-5 w-5" />
-                          {material.subject}
+                {resources.length > 0 ? (
+                  resources.map((resource, index) => (
+                    <Card key={index} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <BookOpen className="h-5 w-5" />
+                            {resource.fileName}
+                          </div>
+                          <Badge variant="outline">Document</Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground">Classroom: {resource.classroom}</p>
+                        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          Uploaded: {format(new Date(resource.uploadDate || resource.createdAt || Date.now()), "PPP")}
                         </div>
-                        <Badge variant="outline">{material.type}</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{material.description}</p>
-                      <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        Uploaded: {format(new Date(material.uploadDate), "PPP")}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline" onClick={() => handleDownload(material.id)}>
-                        <Download className="mr-2 h-4 w-4" />
-                        Download
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
+                      </CardContent>
+                      <CardFooter className="flex justify-between">
+                        <Button variant="outline" onClick={() => handleDownload(resource.fileUrl)}>
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground py-8">No study materials uploaded by your teacher yet.</p>
+                )}
               </TabsContent>
             </Tabs>
           )
@@ -411,25 +308,29 @@ const StudentClassroom = () => {
           title: "Resources",
           content: (
             <div className="space-y-4">
-              {resourcesData.map((resource, index) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      {resource.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{resource.description}</p>
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="outline" className="w-full">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {resources.length > 0 ? (
+                resources.map((resource, index) => (
+                  <Card key={index}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        {resource.fileName}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">Classroom course material for {resource.classroom}</p>
+                    </CardContent>
+                    <CardFooter>
+                      <Button variant="outline" className="w-full" onClick={() => handleDownload(resource.fileUrl)}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Download File
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <p className="text-center text-muted-foreground py-8">No files uploaded yet.</p>
+              )}
             </div>
           )
         });
@@ -565,43 +466,13 @@ const StudentClassroom = () => {
     setShowPopup(true);
   };
 
-  const fetchTimetable = async () => {
-    try {
-      setLoadingStates(prev => ({ ...prev, timetable: true }));
-      const response = await studentService.getTimetable();
-      setTimetableData(response.data);
-      toast.success("Timetable loaded successfully");
-    } catch (error) {
-      toast.error("Failed to load timetable");
-    } finally {
-      setLoadingStates(prev => ({ ...prev, timetable: false }));
+  const handleDownload = (fileUrl) => {
+    if (!fileUrl || fileUrl === "#") {
+      toast.error("File is not available");
+      return;
     }
-  };
-
-  const fetchAttendance = async () => {
-    try {
-      setLoadingStates(prev => ({ ...prev, attendance: true }));
-      const response = await studentService.getMyAttendance(
-        studentData?.academic?.course,
-        new Date().toISOString().split('T')[0],
-        new Date().toISOString().split('T')[0]
-      );
-      setAttendanceData(response.data);
-      toast.success("Attendance data loaded successfully");
-    } catch (error) {
-      toast.error("Failed to load attendance data");
-    } finally {
-      setLoadingStates(prev => ({ ...prev, attendance: false }));
-    }
-  };
-
-  const handleDownload = async (materialId) => {
-    try {
-      toast.loading("Downloading...");
-      toast.success("Download completed");
-    } catch (error) {
-      toast.error("Download failed");
-    }
+    toast.success("Opening file in new tab...");
+    window.open(fileUrl, "_blank");
   };
 
   if (loading) {
@@ -698,45 +569,48 @@ const StudentClassroom = () => {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-72">
-                    {dummyAssignments.map((assignment) => (
-                      <div
-                        key={assignment.id}
-                        className="p-4 border rounded-lg mb-2 hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium">{assignment.title}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {assignment.subject}
-                            </p>
-                          </div>
-                          <Badge
-                            variant={
-                              assignment.status === "Overdue"
-                                ? "destructive"
-                                : assignment.status === "Pending"
-                                ? "warning"
-                                : "default"
-                            }
+                    {assignments.length > 0 ? (
+                      assignments.map((assignment) => {
+                        const isOverdue = new Date(assignment.dueDate) < new Date();
+                        return (
+                          <div
+                            key={assignment._id}
+                            className="p-4 border rounded-lg mb-2 hover:shadow-md transition-shadow"
                           >
-                            {assignment.status}
-                          </Badge>
-                        </div>
-                        <div className="mt-2 flex justify-between items-center text-sm">
-                          <span className="text-muted-foreground">
-                            Due: {format(new Date(assignment.dueDate), "PPP")}
-                          </span>
-                          <span className="font-medium">
-                            Marks: {assignment.marks}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-medium text-gray-900">{assignment.title}</h3>
+                                <p className="text-xs text-muted-foreground">
+                                  Course: {assignment.course}
+                                </p>
+                              </div>
+                              <Badge
+                                variant={isOverdue ? "destructive" : "warning"}
+                              >
+                                {isOverdue ? "Overdue" : "Pending"}
+                              </Badge>
+                            </div>
+                            <div className="mt-2 flex justify-between items-center text-xs">
+                              <span className="text-muted-foreground">
+                                Due: {format(new Date(assignment.dueDate), "PPP")}
+                              </span>
+                            </div>
+                            {assignment.description && (
+                              <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                                {assignment.description}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-center text-muted-foreground text-sm py-8">No pending assignments</p>
+                    )}
                   </ScrollArea>
                 </CardContent>
               </Card>
             </div>
-
+ 
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
@@ -751,29 +625,44 @@ const StudentClassroom = () => {
                       <TableRow>
                         <TableHead>Time</TableHead>
                         <TableHead>Subject</TableHead>
-                        <TableHead>Room</TableHead>
+                        <TableHead>Room / Status</TableHead>
                         <TableHead>Teacher</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {dummyTimetable[0].classes.map((lecture, index) => (
-                        <TableRow key={index} className="hover:bg-gray-50">
-                          <TableCell>{lecture.time}</TableCell>
-                          <TableCell>{lecture.subject}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">
-                              <MapPin className="mr-1 h-3 w-3" />
-                              {lecture.room}
-                            </Badge>
+                      {timetableData.length > 0 ? (
+                        timetableData.map((lecture, index) => {
+                          const start = lecture.startTime ? format(new Date(lecture.startTime), "hh:mm a") : "N/A";
+                          const end = lecture.endTime ? format(new Date(lecture.endTime), "hh:mm a") : "N/A";
+                          const teacherName = lecture.teacher 
+                            ? `${lecture.teacher.personal?.firstName || ""} ${lecture.teacher.personal?.lastName || ""}`.trim()
+                            : "Unknown Teacher";
+                          return (
+                            <TableRow key={lecture._id || index} className="hover:bg-gray-50">
+                              <TableCell className="font-medium">{start} - {end}</TableCell>
+                              <TableCell className="font-semibold text-indigo-700">{lecture.subject}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline">
+                                  <MapPin className="mr-1 h-3 w-3 inline" />
+                                  Online Room
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{teacherName || "N/A"}</TableCell>
+                            </TableRow>
+                          );
+                        })
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                            No classes scheduled for today
                           </TableCell>
-                          <TableCell>{lecture.teacher}</TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
                 </CardContent>
               </Card>
-
+ 
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -787,36 +676,36 @@ const StudentClassroom = () => {
                       <div>
                         <p className="text-sm font-medium">Overall Attendance</p>
                         <p className="text-2xl font-bold">
-                          {dummyAttendance.stats.percentage}%
+                          {attendanceStats?.percentage || 0}%
                         </p>
                       </div>
                       <div className="flex gap-4">
                         <div className="text-center">
-                          <p className="text-sm font-medium">Present</p>
+                          <p className="text-sm font-medium text-green-700">Present</p>
                           <p className="text-lg font-bold text-green-600">
-                            {dummyAttendance.stats.present}
+                            {attendanceStats?.present || 0}
                           </p>
                         </div>
                         <div className="text-center">
-                          <p className="text-sm font-medium">Absent</p>
+                          <p className="text-sm font-medium text-red-700">Absent</p>
                           <p className="text-lg font-bold text-red-600">
-                            {dummyAttendance.stats.absent}
+                            {attendanceStats?.absent || 0}
                           </p>
                         </div>
                         <div className="text-center">
-                          <p className="text-sm font-medium">Late</p>
+                          <p className="text-sm font-medium text-yellow-700">Late</p>
                           <p className="text-lg font-bold text-yellow-600">
-                            {dummyAttendance.stats.late}
+                            {attendanceStats?.late || 0}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <Progress value={dummyAttendance.stats.percentage} />
+                    <Progress value={attendanceStats?.percentage || 0} />
                   </div>
                 </CardContent>
               </Card>
             </div>
-
+ 
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
@@ -827,23 +716,27 @@ const StudentClassroom = () => {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[400px]">
-                    {dummyAnnouncements.map((announcement) => (
-                      <div
-                        key={announcement.id}
-                        className="p-4 border rounded-lg mb-2 hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-medium">{announcement.title}</h3>
-                          <Badge variant="outline">{announcement.type}</Badge>
+                    {announcements.length > 0 ? (
+                      announcements.map((announcement) => (
+                        <div
+                          key={announcement._id}
+                          className="p-4 border rounded-lg mb-2 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex justify-between items-start">
+                            <h3 className="font-semibold text-gray-900">{announcement.title}</h3>
+                            <Badge variant="outline">General</Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {announcement.content}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {format(new Date(announcement.createdAt || announcement.date || Date.now()), "PPP")}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {announcement.content}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {format(new Date(announcement.date), "PPP")}
-                        </p>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-center text-muted-foreground text-sm py-8">No announcements posted</p>
+                    )}
                   </ScrollArea>
                 </CardContent>
               </Card>

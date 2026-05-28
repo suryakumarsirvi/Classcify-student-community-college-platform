@@ -14,16 +14,23 @@ export default function TeacherLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    toast.loading("Loading...");
+    const toastId = toast.loading("Loading...");
 
     try {
       const { data } = await api.post("/api/teachers/login", formData);
       
       localStorage.setItem("teacherToken", data.token);
+      toast.dismiss(toastId);
       toast.success("Teacher login successful!🎉");
       navigate("/teacher/dashboard");
     } catch (err) {
-      toast.error(err.response?.data?.error || "Staff Login failed");
+      toast.dismiss(toastId);
+      const backendMsg =
+        err?.originalError?.response?.data?.error ||
+        err?.originalError?.response?.data?.message ||
+        err?.message ||
+        "Staff Login failed";
+      toast.error(backendMsg);
     } finally {
       setLoading(false);
     }

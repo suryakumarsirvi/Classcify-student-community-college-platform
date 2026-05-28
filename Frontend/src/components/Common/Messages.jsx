@@ -67,10 +67,7 @@ const Messages = () => {
     
     setLoadingMessages(prev => ({ ...prev, [userId]: true }));
     try {
-      console.log(`📥 Fetching direct messages for user: ${userId}`);
       const response = await MessageAPI.getDirectMessages(userId);
-      console.log(`📨 Direct messages response for user ${userId}:`, response.data);
-      
       
       const formattedMessages = Array.isArray(response.data) 
         ? response.data.map(formatMessage)
@@ -89,7 +86,7 @@ const Messages = () => {
   };
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !user) return;
   
     socket.on("new-invitation", (invitation) => {
       console.log("📩 New invitation received:", invitation);
@@ -112,7 +109,7 @@ const Messages = () => {
       socket.off("new-invitation");
       socket.off("direct-message");
     };
-  }, [socket, user._id]);
+  }, [socket, user]);
 
   const handleSearch = async (e) => {
     const query = e.target.value.trim();
@@ -342,7 +339,6 @@ const Messages = () => {
         </Button>
       </div>
 
-      {/* Search Modal */}
       {isSearchOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg w-[40%] max-w-md">
@@ -403,7 +399,7 @@ const Messages = () => {
                 </div>
               ) : getFilteredResults().length > 0 ? (
                 getFilteredResults().map((item) => {
-                  if (item.type === 'community' || item.members) { // Community result
+                  if (item.type === 'community' || item.members) { 
                     return (
                       <div
                         key={item._id}

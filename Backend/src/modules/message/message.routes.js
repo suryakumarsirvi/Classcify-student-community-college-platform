@@ -20,13 +20,15 @@ import {
   getUserConversations,
   createConversation,
   getConversationMessages,
-  markMessagesAsRead
+  markMessagesAsRead,
+  searchCommunities
 } from './message.controller.js';
 
 const router = express.Router();
 
 router.post('/communities', auth(['student', 'teacher', 'admin']), upload.single('image'), createCommunity);
 router.get('/communities', auth(['student', 'teacher', 'admin']), getAllCommunities);
+router.get('/communities/search', auth(['student', 'teacher', 'admin']), searchCommunities);
 router.get('/communities/join-requests', auth(['student', 'teacher', 'admin']), getJoinRequests);
 router.get('/communities/:id', auth(['student', 'teacher', 'admin']), getCommunityDetails);
 

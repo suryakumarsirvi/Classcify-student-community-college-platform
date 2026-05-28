@@ -6,6 +6,10 @@ class TimetableRepository extends TimetableRepositoryContract {
     return await Timetable.find({ teacher: teacherId });
   }
 
+  async findByCourse(course) {
+    return await Timetable.find({ course }).populate('teacher', 'name personal.firstName personal.lastName');
+  }
+
   async create(timetableData) {
     const timetable = new Timetable(timetableData);
     return await timetable.save();

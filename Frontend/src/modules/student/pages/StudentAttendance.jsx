@@ -67,106 +67,20 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "sonner";
 import studentService from "@/modules/student/services/student.service";
+import api from "@/services/api";
 
 const dummyAttendanceData = {
   overallStats: {
-    totalClasses: 120,
-    present: 25,
-    absent: 3,
-    late: 2,
-    percentage: 83.33,
-    lastUpdated: "2024-04-17T10:30:00Z"
+    totalClasses: 0,
+    present: 0,
+    absent: 0,
+    late: 0,
+    percentage: 0,
+    lastUpdated: new Date().toISOString()
   },
-  monthlyStats: [
-    {
-      month: "January 2024",
-      present: 22,
-      absent: 3,
-      late: 2,
-      percentage: 81.48
-    },
-    {
-      month: "February 2024",
-      present: 20,
-      absent: 4,
-      late: 3,
-      percentage: 74.07
-    },
-    {
-      month: "March 2024",
-      present: 23,
-      absent: 2,
-      late: 2,
-      percentage: 85.19
-    },
-    {
-      month: "April 2024",
-      present: 30,
-      absent: 6,
-      late: 3,
-      percentage: 76.92
-    }
-  ],
-  subjectWiseStats: [
-    {
-      subject: "Mathematics",
-      totalClasses: 30,
-      present: 25,
-      absent: 3,
-      late: 2,
-      percentage: 83.33
-    },
-    {
-      subject: "Physics",
-      totalClasses: 30,
-      present: 23,
-      absent: 4,
-      late: 3,
-      percentage: 76.67
-    },
-    {
-      subject: "Chemistry",
-      totalClasses: 30,
-      present: 24,
-      absent: 4,
-      late: 2,
-      percentage: 80.00
-    },
-    {
-      subject: "Computer Science",
-      totalClasses: 30,
-      present: 23,
-      absent: 4,
-      late: 3,
-      percentage: 76.67
-    }
-  ],
-  dailyRecords: [
-    {
-      date: "2024-04-17",
-      records: [
-        { subject: "Mathematics", status: "Present", time: "09:00 AM" },
-        { subject: "Physics", status: "Late", time: "10:30 AM" },
-        { subject: "Chemistry", status: "Present", time: "12:00 PM" }
-      ]
-    },
-    {
-      date: "2024-04-16",
-      records: [
-        { subject: "Mathematics", status: "Present", time: "09:00 AM" },
-        { subject: "Physics", status: "Present", time: "10:30 AM" },
-        { subject: "Computer Science", status: "Absent", time: "12:00 PM" }
-      ]
-    },
-    {
-      date: "2024-04-15",
-      records: [
-        { subject: "Mathematics", status: "Late", time: "09:00 AM" },
-        { subject: "Physics", status: "Present", time: "10:30 AM" },
-        { subject: "Chemistry", status: "Present", time: "12:00 PM" }
-      ]
-    }
-  ]
+  monthlyStats: [],
+  subjectWiseStats: [],
+  dailyRecords: []
 };
 
 const StudentAttendance = () => {
@@ -183,35 +97,108 @@ const StudentAttendance = () => {
   const [viewMode, setViewMode] = useState("daily");
   const [exportFormat, setExportFormat] = useState("pdf");
 
-  useEffect(() => {
-    const fetchAttendanceData = async () => {
-      try {
-        setLoading(true);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
+  const loadAttendance = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/api/attendance/mystats");
+      if (res?.data) {
+        const { overallStats, detailedRecords, course } = res.data;
 
-    fetchAttendanceData();
-  }, [dateRange]);
+        // Group by Date for daily records
+        const dateGroups = {};
+        detailedRecords.forEach(rec => {
+          const dateStr = new Date(rec.date).toISOString().split("T")[0];
+          if (!dateGroups[dateStr]) {
+            dateGroups[dateStr] = [];
+          }
+          dateGroups[dateStr].push({
+            subject: course || "General",
+            status: rec.status,
+            time: format(new Date(rec.date), "hh:mm a"),
+            remark: rec.remark || "",
+            teacher: rec.teacher || "Unknown"
+          });
+        });
+
+        const dailyRecords = Object.keys(dateGroups).map(date => ({
+          date,
+          records: dateGroups[date]
+        })).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Group by Month for monthly stats
+        const monthGroups = {};
+        detailedRecords.forEach(rec => {
+          const d = new Date(rec.date);
+          if (!isNaN(d.getTime())) {
+            const monthName = format(d, "MMMM yyyy");
+            if (!monthGroups[monthName]) {
+              monthGroups[monthName] = { present: 0, absent: 0, late: 0, total: 0 };
+            }
+            const status = rec.status.toLowerCase();
+            if (status === "present") monthGroups[monthName].present++;
+            else if (status === "absent") monthGroups[monthName].absent++;
+            else if (status === "late") monthGroups[monthName].late++;
+            monthGroups[monthName].total++;
+          }
+        });
+
+        const monthlyStats = Object.keys(monthGroups).map(month => {
+          const g = monthGroups[month];
+          const percentage = g.total > 0 ? Number(((g.present + g.late) / g.total * 100).toFixed(2)) : 0;
+          return { month, present: g.present, absent: g.absent, late: g.late, percentage };
+        });
+
+        // Subject-wise stats: since the course name is "course", we can just use that as the single subject/course
+        const subjectWiseStats = [
+          {
+            subject: course || "General",
+            totalClasses: overallStats.totalClasses,
+            present: overallStats.present,
+            absent: overallStats.absent,
+            late: overallStats.late,
+            percentage: overallStats.percentage
+          }
+        ];
+
+        setAttendanceData({
+          overallStats: {
+            ...overallStats,
+            lastUpdated: new Date().toISOString()
+          },
+          monthlyStats,
+          subjectWiseStats,
+          dailyRecords
+        });
+      }
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError(err?.response?.data?.message || err?.message || "Failed to load attendance data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAttendance();
+  }, []);
 
   const handleRefresh = async () => {
     try {
-      setLoading(true);
+      await loadAttendance();
       toast.success("Attendance data refreshed successfully");
     } catch (err) {
       toast.error("Failed to refresh attendance data");
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleExport = async (format) => {
     try {
       toast.loading(`Exporting attendance data as ${format.toUpperCase()}...`);
-      toast.success(`Attendance data exported as ${format.toUpperCase()}`);
+      setTimeout(() => {
+        toast.dismiss();
+        toast.success(`Attendance data exported as ${format.toUpperCase()}`);
+      }, 1000);
     } catch (err) {
       toast.error("Failed to export attendance data");
     }

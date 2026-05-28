@@ -55,6 +55,14 @@ export const studentService = {
   acceptInvitation: async (invitationId) => {
     const response = await api.patch(`/api/invitations/${invitationId}/accept`);
     return response.data;
+  },
+
+  getTimetable: async () => {
+    return api.get("/api/timetable");
+  },
+
+  getResources: async () => {
+    return api.get("/api/resources");
   }
 };
 

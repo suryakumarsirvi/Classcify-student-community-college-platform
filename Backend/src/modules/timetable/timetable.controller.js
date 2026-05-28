@@ -9,7 +9,13 @@ export const createTimetable = asyncHandler(async (req, res) => {
 });
 
 export const getTimetable = asyncHandler(async (req, res) => {
-  const teacherId = req.user._id || req.user.id;
-  const timetable = await timetableService.getTimetable(teacherId);
+  const userId = req.user._id || req.user.id;
+  const role = req.user.role;
+  let timetable;
+  if (role === 'student') {
+    timetable = await timetableService.getStudentTimetable(req.user);
+  } else {
+    timetable = await timetableService.getTimetable(userId);
+  }
   res.status(200).json(timetable);
 });

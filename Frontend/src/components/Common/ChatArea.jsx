@@ -13,8 +13,14 @@ import { MessageAPI } from "@/api/message.api";
 
 export const ChatArea = ({
   selectedConversation,
+  messages
 }) => {
-  const [messages, setMessages] = useState([]);
+  // Initialize local message state from props
+  const [localMessages, setLocalMessages] = useState(messages || []);
+  // Sync when parent messages prop changes
+  useEffect(() => {
+    setLocalMessages(messages);
+  }, [messages]);
   const [newMessage, setNewMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -24,6 +30,8 @@ export const ChatArea = ({
   const { user } = useAuth();
   const socket = useSocket();
   const messagesEndRef = useRef(null);
+
+  console.log(messages)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,7 +79,7 @@ export const ChatArea = ({
 
         const response = await MessageAPI.sendDirectMessage(messageData);
         if (response?.data) {
-          setMessages((prev) => [...prev, response.data]);
+          setLocalMessages((prev) => [...prev, response.data]);
           setNewMessage("");
           setTimeout(scrollToBottom, 100);
         }
@@ -84,7 +92,7 @@ export const ChatArea = ({
         const messageData = {
           content: newMessage,
           sender: user._id,
-          senderType: user.role || 'admin',
+          senderType: user.role && user.role !== 'admin' ? user.role : "Student",
           senderName: user.name || `${user.personal?.firstName} ${user.personal?.lastName}`,
           isAdmin: selectedConversation.admins?.some(admin => admin._id === user._id) || 
                   selectedConversation.creator?._id === user._id
@@ -100,7 +108,7 @@ export const ChatArea = ({
         console.log("Community message response:", response);
 
         if (response?.data) {
-          setMessages((prev) => [...prev, response.data]);
+          setLocalMessages((prev) => [...prev, response.data]);
           setNewMessage("");
           setTimeout(scrollToBottom, 100);
         }
@@ -118,7 +126,7 @@ export const ChatArea = ({
 
     const handleNewMessage = (message) => {
       if (message.conversation === selectedConversation?._id) {
-        setMessages((prev) => [...prev, message]);
+        setLocalMessages((prev) => [...prev, message]);
         setTimeout(scrollToBottom, 100);
       }
     };
@@ -136,7 +144,7 @@ export const ChatArea = ({
       try {
         const response = await MessageAPI.getConversationMessages(selectedConversation._id);
         if (response?.data) {
-          setMessages(response.data);
+          setLocalMessages(response.data);
           setTimeout(scrollToBottom, 100);
         }
       } catch (error) {
@@ -165,17 +173,21 @@ export const ChatArea = ({
     setIsSearching(false);
   };
 
-  const handleSendInvitation = async (user) => {
+  const handleSendInvitation = async (invitee) => {
     if (!selectedConversation) return;
+
+    // Use the current authenticated user as the sender
+    const sender = user; // from useAuth()
 
     try {
         await MessageAPI.sendInvitation({
             communityId: selectedConversation._id,
-            userId: user._id,
-            senderType: user.role || 'Student',
-            senderName: `${user.personal?.firstName || ''} ${user.personal?.lastName || ''}`
+            userId: invitee._id,
+            // Use a valid enum value for senderType
+            senderType: "Student",
+            senderName: `${sender.personal?.firstName || ''} ${sender.personal?.lastName || ''}`.trim()
         });
-        
+
         setIsInvitationSent(true);
         setTimeout(() => {
             setIsInvitationSent(false);
@@ -335,8 +347,8 @@ export const ChatArea = ({
 
             {/* Messages List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/50">
-              {Array.isArray(messages) &&
-                messages.map((message) => (
+              {Array.isArray(localMessages) &&
+                localMessages.map((message) => (
                   <div
                     key={message._id}
                     className={`flex ${

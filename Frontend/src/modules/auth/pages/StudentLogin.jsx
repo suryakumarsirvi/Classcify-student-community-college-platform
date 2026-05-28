@@ -64,44 +64,7 @@ const StudentLogin = () => {
     return () => controller.abort();
   }, []);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!formData.email || !formData.password) {
-      toast.error("Please enter both email and password");
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const loginPayload = {
-        personal: {
-          email: formData.email.trim()
-        },
-        auth: {
-          password: formData.password
-        }
-      };
-
-      const { data } = await studentService.login(loginPayload);
-
-      if (data?.token) {
-        localStorage.setItem("studentToken", data.token);
-        toast.success("Login successful!");
-        setTimeout(() => {
-          navigate("/student/dashboard");
-        }, 1000);
-      } else {
-        toast.error("Login failed. Please try again.");
-      }
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || 
-                          error.response?.data?.details || 
-                          "Login failed. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSignupSubmit = async () => {
     const formValues = watch();
@@ -465,6 +428,36 @@ const StudentLogin = () => {
     const pasteData = e.clipboardData.getData("text").trim();
     if (!/^\d{6}$/.test(pasteData)) return;
     setOtpValues(pasteData.split(""));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Send flat credentials expected by backend
+      const loginPayload = {
+        email: formData.email,
+        password: formData.password,
+      };
+      const response = await studentService.login(loginPayload);
+      const { token, user } = response.data;
+      localStorage.setItem("studentToken", token);
+      toast.success("Logged in successfully!");
+      navigate("/student/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      // The interceptor wraps 401 as ApiError; read the backend message from originalError
+      const backendMsg =
+        error?.originalError?.response?.data?.error ||
+        error?.originalError?.response?.data?.message ||
+        error?.message ||
+        "Login failed. Please check your credentials.";
+      toast.error(backendMsg);
+    } finally {
+      setLoading(false);
+      // Reset password field via formData
+      setFormData((prev) => ({ ...prev, password: "" }));
+    }
   };
 
   const handleVerification = async () => {

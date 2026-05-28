@@ -111,7 +111,7 @@ export const MessageAPI = {
 
     getAllCommunities: async () => {
         try {
-            const res = await api.get('/api/messages/all-communities');
+            const res = await api.get('/api/messages/communities');
             return res.data;
         } catch (error) {
             console.error('Error fetching all communities:', error);
@@ -255,12 +255,10 @@ export const MessageAPI = {
 
     getDirectMessages: async (userId) => {
         try {
-            console.log(`📥 Fetching direct messages for user: ${userId}`);
             const response = await api.get(`/api/messages/direct/${userId}`);
-            console.log(`📨 Direct messages response:`, response.data);
             return response;
         } catch (error) {
-            console.error(`❌ Error fetching direct messages for user ${userId}:`, error);
+            console.error('Error fetching direct messages:', error);
             throw error;
         }
     },

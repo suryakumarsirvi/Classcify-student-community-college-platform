@@ -24,11 +24,7 @@ class AssignmentService {
     }
 
     const assignments = await assignmentRepository.findFiltered(filter);
-    if (!assignments || assignments.length === 0) {
-      throw new ApiError(404, 'No assignments found');
-    }
-
-    return assignments;
+    return assignments || [];
   }
 }
 

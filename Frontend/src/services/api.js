@@ -66,7 +66,7 @@ api.interceptors.response.use(
       if (status === 401) {
         apiError = new ApiError({
           name: ErrorCodes.UNAUTHORIZED,
-          message: ErrorMessages.UNAUTHORIZED,
+          message: data?.error || data?.message || ErrorMessages.UNAUTHORIZED,
           status,
           source: "api.js",
           originalError: error,
@@ -74,7 +74,7 @@ api.interceptors.response.use(
       } else if (status === 403) {
         apiError = new ApiError({
           name: ErrorCodes.FORBIDDEN,
-          message: ErrorMessages.FORBIDDEN,
+          message: data?.error || data?.message || ErrorMessages.FORBIDDEN,
           status,
           source: "api.js",
           originalError: error,
@@ -82,7 +82,7 @@ api.interceptors.response.use(
       } else if (status === 404) {
         apiError = new ApiError({
           name: ErrorCodes.NOT_FOUND,
-          message: ErrorMessages.NOT_FOUND,
+          message: data?.error || data?.message || ErrorMessages.NOT_FOUND,
           status,
           source: "api.js",
           originalError: error,
