@@ -155,7 +155,7 @@ ClasscifyPlatform/
 │   ├── index.html
 │   ├── vite.config.js              # Bundler config (Tailwind v4 integration)
 │   └── package.json
-└── README
+└── README.md
 ```
 
 ---
