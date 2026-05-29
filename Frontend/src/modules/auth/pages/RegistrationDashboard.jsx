@@ -16,6 +16,7 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { useRef } from "react";
+import TestCredentials from "@/components/auth/TestCredentials";
 
 export default function RegistrationDashboard() {
   const swiperRef = useRef(null);
@@ -28,6 +29,10 @@ export default function RegistrationDashboard() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-zinc-200 to-white h-screen relative">
+      <div className="absolute top-4 right-4 md:top-6 md:right-6 z-50">
+        <TestCredentials />
+      </div>
+
       <Swiper
         ref={swiperRef}
         modules={[EffectCreative]}
