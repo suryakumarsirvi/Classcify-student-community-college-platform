@@ -210,7 +210,7 @@ const Messages = () => {
         
     } catch (error) {
         console.error("Failed to send join request:", error);
-        alert("Failed to send join request: " + (error.response?.data?.error || error.message));
+        alert("Failed to send join request: " + (error.message || error.originalError?.response?.data?.message || error.message));
     }
   };
 
@@ -274,7 +274,7 @@ const Messages = () => {
       setIsSearchOpen(false);
     } catch (error) {
       console.error("❌ Error creating conversation:", error);
-      alert("Failed to create conversation: " + (error.response?.data?.error || error.message));
+      alert("Failed to create conversation: " + (error.message || error.originalError?.response?.data?.message || error.message));
     }
   };
 

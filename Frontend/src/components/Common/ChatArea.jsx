@@ -195,7 +195,7 @@ export const ChatArea = ({
         }, 2000);
     } catch (error) {
         console.error("Failed to send invitation:", error);
-        alert("Failed to send invitation: " + (error.response?.data?.message || error.message));
+        alert("Failed to send invitation: " + (error.message || error.originalError?.response?.data?.message || error.message));
     }
   };
 

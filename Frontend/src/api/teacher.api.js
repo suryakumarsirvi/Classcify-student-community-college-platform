@@ -7,8 +7,8 @@ const teacherApi = {
       console.log("✅ Attendance Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Attendance fetch error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to fetch attendance';
+      console.error("❌ Attendance fetch error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch attendance';
     }
   },
 
@@ -18,8 +18,8 @@ const teacherApi = {
       console.log("✅ Attendance Updated:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Attendance update error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to update attendance';
+      console.error("❌ Attendance update error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to update attendance';
     }
   },
 
@@ -30,8 +30,8 @@ const teacherApi = {
       console.log("✅ Courses Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Courses fetch error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to fetch courses';
+      console.error("❌ Courses fetch error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch courses';
     }
   },
 
@@ -42,8 +42,8 @@ const teacherApi = {
       console.log("✅ Timetable Created:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Timetable creation error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to create timetable';
+      console.error("❌ Timetable creation error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to create timetable';
     }
   },
 
@@ -54,8 +54,8 @@ const teacherApi = {
       console.log("✅ Timetable Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Timetable fetch error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to fetch timetable';
+      console.error("❌ Timetable fetch error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch timetable';
     }
   },
 
@@ -69,8 +69,8 @@ const teacherApi = {
       console.log("✅ Assignment Created:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Assignment creation error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to create assignment';
+      console.error("❌ Assignment creation error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to create assignment';
     }
   },
 
@@ -81,8 +81,8 @@ const teacherApi = {
       console.log("✅ Assignments Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Assignments fetch error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to fetch assignments';
+      console.error("❌ Assignments fetch error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch assignments';
     }
   },
 
@@ -93,8 +93,8 @@ const teacherApi = {
       console.log("✅ Announcement Created:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Announcement creation error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to create announcement';
+      console.error("❌ Announcement creation error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to create announcement';
     }
   },
 
@@ -108,8 +108,8 @@ const teacherApi = {
       }
       return response.data;
     } catch (error) {
-      console.error("❌ Announcements fetch error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to fetch announcements';
+      console.error("❌ Announcements fetch error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch announcements';
     }
   },
 
@@ -123,8 +123,8 @@ const teacherApi = {
       console.log("✅ Resource Uploaded:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Resource upload error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to upload resource';
+      console.error("❌ Resource upload error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to upload resource';
     }
   },
 
@@ -134,8 +134,8 @@ const teacherApi = {
       console.log("✅ Resources Response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Resources fetch error:", error.response?.data);
-      throw error.response?.data?.error || 'Failed to fetch resources';
+      console.error("❌ Resources fetch error:", error.originalError?.response?.data);
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch resources';
     }
   },
 
@@ -146,7 +146,7 @@ const teacherApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error marking attendance:', error);
-      throw error.response?.data?.message || 'Failed to mark attendance';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to mark attendance';
     }
   },
 
@@ -159,7 +159,7 @@ const teacherApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching attendance:', error);
-      throw error.response?.data?.message || 'Failed to fetch attendance';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch attendance';
     }
   },
 
@@ -172,7 +172,7 @@ const teacherApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching attendance stats:', error);
-      throw error.response?.data?.message || 'Failed to fetch attendance statistics';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch attendance statistics';
     }
   },
 
@@ -183,7 +183,7 @@ const teacherApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error updating attendance:', error);
-      throw error.response?.data?.message || 'Failed to update attendance';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to update attendance';
     }
   },
 
@@ -194,7 +194,7 @@ const teacherApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching classroom students:', error);
-      throw error.response?.data?.message || 'Failed to fetch students';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch students';
     }
   },
 
@@ -207,7 +207,7 @@ const teacherApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching attendance heatmap:', error);
-      throw error.response?.data?.message || 'Failed to fetch attendance heatmap';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch attendance heatmap';
     }
   }
 };

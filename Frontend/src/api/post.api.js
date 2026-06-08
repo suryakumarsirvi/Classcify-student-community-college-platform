@@ -29,7 +29,7 @@ const postApi = {
       const response = await api.post(`/api/posts/${postId}/like`);
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Failed to like post';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to like post';
     }
   },
 
@@ -40,7 +40,7 @@ const postApi = {
       });
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Failed to add comment';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to add comment';
     }
   },
 
@@ -49,7 +49,7 @@ const postApi = {
       const response = await api.delete(`/api/posts/${postId}`);
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Failed to delete post';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to delete post';
     }
   },
 
@@ -58,7 +58,7 @@ const postApi = {
       const response = await api.put(`/api/posts/${postId}/comments/${commentId}`, { text });
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Failed to update comment';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to update comment';
     }
   },
 
@@ -67,7 +67,7 @@ const postApi = {
       const response = await api.delete(`/api/posts/${postId}/comments/${commentId}`);
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Failed to delete comment';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to delete comment';
     }
   },
 
@@ -87,7 +87,7 @@ const postApi = {
       const response = await api.get('/api/posts/explore');
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Failed to fetch posts';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch posts';
     }
   },
 

@@ -20,19 +20,25 @@ export default function TeacherLogin() {
       const { data } = await api.post("/api/teachers/login", formData);
       
       localStorage.setItem("teacherToken", data.token);
-      toast.dismiss(toastId);
-      toast.success("Teacher login successful!🎉");
-      navigate("/teacher/dashboard");
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        toast.dismiss(toastId);
+        toast.success("Teacher login successful!🎉");
+        navigate("/teacher/dashboard");
+      }, 0);
     } catch (err) {
-      toast.dismiss(toastId);
-      const backendMsg =
-        err?.originalError?.response?.data?.error ||
-        err?.originalError?.response?.data?.message ||
-        err?.message ||
-        "Staff Login failed";
-      toast.error(backendMsg);
-    } finally {
-      setLoading(false);
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        toast.dismiss(toastId);
+        const backendMsg =
+          err?.originalError?.response?.data?.error ||
+          err?.originalError?.response?.data?.message ||
+          err?.message ||
+          "Staff Login failed";
+        toast.error(backendMsg);
+        setLoading(false);
+      }, 0);
+      return;
     }
   };
 

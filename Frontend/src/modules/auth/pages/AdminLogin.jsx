@@ -35,30 +35,36 @@ export default function AdminAuth() {
         throw new Error("No token received from server");
       }
 
-      toast.dismiss(toastId);
-      toast.success(
-        isLogin ? "Login successful! 🎉" : "Admin Created Successfully! ✅"
-      );
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        toast.dismiss(toastId);
+        toast.success(
+          isLogin ? "Login successful! 🎉" : "Admin Created Successfully! ✅"
+        );
 
-      if (isLogin) {
-        localStorage.setItem("adminToken", res.data.token);
-        toast.info("Redirecting to dashboard... 🚀");
-        setTimeout(() => {
-          navigate("/admin/dashboard", { replace: true });
-        }, 1500);
-      } else {
-        setIsLogin(true);
-      }
+        if (isLogin) {
+          localStorage.setItem("adminToken", res.data.token);
+          toast.info("Redirecting to dashboard... 🚀");
+          setTimeout(() => {
+            navigate("/admin/dashboard", { replace: true });
+          }, 1500);
+        } else {
+          setIsLogin(true);
+        }
+      }, 0);
     } catch (err) {
-      toast.dismiss(toastId);
-      const errorMessage =
-        err?.originalError?.response?.data?.msg ||
-        err?.originalError?.response?.data?.error ||
-        err?.message ||
-        "Something went wrong!";
-      toast.error(`❌ Error: ${errorMessage}`);
-    } finally {
-      setLoading(false);
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        toast.dismiss(toastId);
+        const errorMessage =
+          err?.originalError?.response?.data?.msg ||
+          err?.originalError?.response?.data?.error ||
+          err?.message ||
+          "Something went wrong!";
+        toast.error(`❌ Error: ${errorMessage}`);
+        setLoading(false);
+      }, 0);
+      return;
     }
   };
 

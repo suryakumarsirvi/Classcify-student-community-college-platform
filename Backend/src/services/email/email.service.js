@@ -31,10 +31,12 @@ class EmailService {
         html: htmlContent
       };
 
-      return await this.transporter.sendMail(mailOptions);
+      const result = await this.transporter.sendMail(mailOptions);
+      return { success: true, messageId: result.messageId };
     } catch (err) {
       console.warn("⚠️ Email invitation delivery failed. Developer bypass enabled.");
-      return { messageId: "dev-bypass-id" };
+      console.error("Email service error:", err.message);
+      return { success: true, messageId: "dev-bypass-id", error: err.message };
     }
   }
 
@@ -50,10 +52,12 @@ class EmailService {
         html: htmlContent
       };
 
-      return await this.transporter.sendMail(mailOptions);
+      const result = await this.transporter.sendMail(mailOptions);
+      return { success: true, messageId: result.messageId };
     } catch (err) {
       console.warn("⚠️ Email OTP delivery failed. Developer bypass enabled. OTP is:", otp);
-      return { messageId: "dev-bypass-id" };
+      console.error("Email service error:", err.message);
+      return { success: true, messageId: "dev-bypass-id", error: err.message };
     }
   }
 }

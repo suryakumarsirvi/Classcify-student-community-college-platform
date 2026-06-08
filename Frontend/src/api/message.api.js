@@ -163,7 +163,8 @@ export const MessageAPI = {
             return response.data.data;
         } catch (error) {
             console.error('Error fetching invitations:', error);
-            if (error.response?.data?.error === 'An invitation is already pending for this user') {
+            const errorMsg = error.message || error.originalError?.response?.data?.message;
+            if (errorMsg === 'An invitation is already pending for this user') {
                 throw new Error('An invitation is already pending for this user');
             }
             throw error;

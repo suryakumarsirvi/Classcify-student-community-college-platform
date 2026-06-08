@@ -1,6 +1,6 @@
 
 export const handleApiError = (error) => {
-    const message = error.response?.data?.error || error.message || 'API Error';
+    const message = error.message || error.originalError?.response?.data?.message || error.response?.data?.message || 'API Error';
     throw new Error(message);
   };
   

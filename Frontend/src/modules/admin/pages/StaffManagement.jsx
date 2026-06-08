@@ -133,7 +133,7 @@ const StaffManagement = () => {
         toast.success("OTP sent successfully!");
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to send OTP");
+      toast.error(error.message || error.originalError?.response?.data?.message || "Failed to send OTP");
     }
   };
 
@@ -155,7 +155,7 @@ const StaffManagement = () => {
 
       toast.success("Teacher verified successfully!");
     } catch (error) {
-      toast.error(error.response?.data?.error || "Verification failed");
+      toast.error(error.message || error.originalError?.response?.data?.message || "Verification failed");
     }
   };
 
@@ -180,7 +180,7 @@ const StaffManagement = () => {
       return true;
     } catch (error) {
       toast.error(
-        `Draft Save Failed: ${error.response?.data?.error || error.message}`,
+        `Draft Save Failed: ${error.message || error.originalError?.response?.data?.message}`,
       );
       return false;
     }
@@ -212,7 +212,7 @@ const StaffManagement = () => {
         }
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || "Submission failed");
+      toast.error(error.message || error.originalError?.response?.data?.message || "Submission failed");
     }
   };
 
@@ -242,7 +242,7 @@ const StaffManagement = () => {
 
       setTimeout(() => setOpenInviteSuccess(false), 5000);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to send invitation");
+      toast.error(error.message || error.originalError?.response?.data?.message || "Failed to send invitation");
     } finally {
       setLoading(false);
     }
@@ -269,7 +269,7 @@ const StaffManagement = () => {
         setStaff(staff.filter((teacher) => teacher._id !== id));
         toast.success("Staff member removed successfully");
       } catch (error) {
-        toast.error(error.response?.data?.error || "Failed to remove staff");
+        toast.error(error.message || error.originalError?.response?.data?.message || "Failed to remove staff");
       }
     }
   };

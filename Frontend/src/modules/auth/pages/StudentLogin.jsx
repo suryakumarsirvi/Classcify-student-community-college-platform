@@ -105,16 +105,24 @@ const StudentLogin = () => {
       }
 
       const { data } = await studentService.signup(payload);
-      setVerificationStep(1);
-      setStudentId(data.studentId);
-      toast.success("OTP sent to your email!");
+      
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        setLoading(false);
+        setVerificationStep(1);
+        setStudentId(data.studentId);
+        toast.success("OTP sent to your email!");
+      }, 0);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error ||
-          "Registration failed. Please check all fields.",
-      );
-    } finally {
-      setLoading(false);
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        toast.error(
+          error.message ||
+            error.originalError?.response?.data?.message ||
+            "Registration failed. Please check all fields.",
+        );
+        setLoading(false);
+      }, 0);
     }
   };
 
@@ -442,21 +450,28 @@ const StudentLogin = () => {
       const response = await studentService.login(loginPayload);
       const { token, user } = response.data;
       localStorage.setItem("studentToken", token);
-      toast.success("Logged in successfully!");
-      navigate("/student/dashboard");
+      
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        setLoading(false);
+        toast.success("Logged in successfully!");
+        navigate("/student/dashboard");
+      }, 0);
     } catch (error) {
       console.error("Login error:", error);
-      // The interceptor wraps 401 as ApiError; read the backend message from originalError
-      const backendMsg =
-        error?.originalError?.response?.data?.error ||
-        error?.originalError?.response?.data?.message ||
-        error?.message ||
-        "Login failed. Please check your credentials.";
-      toast.error(backendMsg);
-    } finally {
-      setLoading(false);
-      // Reset password field via formData
-      setFormData((prev) => ({ ...prev, password: "" }));
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        // The interceptor wraps 401 as ApiError; read the backend message from originalError
+        const backendMsg =
+          error?.originalError?.response?.data?.error ||
+          error?.originalError?.response?.data?.message ||
+          error?.message ||
+          "Login failed. Please check your credentials.";
+        toast.error(backendMsg);
+        setLoading(false);
+        // Reset password field via formData
+        setFormData((prev) => ({ ...prev, password: "" }));
+      }, 0);
     }
   };
 
@@ -465,17 +480,26 @@ const StudentLogin = () => {
     try {
       const { data } = await studentService.verify(studentId, otpValues.join(""));
       localStorage.setItem("studentToken", data.token);
-      setVerificationStep(2);
-      toast.success("Account verified successfully!");
+      
+      // Defer toast operations to next event loop to avoid render-phase updates
       setTimeout(() => {
-        navigate("/student/dashboard");
-      }, 2000);
+        setLoading(false);
+        setVerificationStep(2);
+        toast.success("Account verified successfully!");
+        setTimeout(() => {
+          navigate("/student/dashboard");
+        }, 2000);
+      }, 0);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Invalid OTP. Please try again.",
-      );
-    } finally {
-      setLoading(false);
+      // Defer toast operations to next event loop to avoid render-phase updates
+      setTimeout(() => {
+        toast.error(
+          error.message ||
+          error.originalError?.response?.data?.message || 
+          "Invalid OTP. Please try again.",
+        );
+        setLoading(false);
+      }, 0);
     }
   };
 
@@ -607,7 +631,7 @@ const StudentLogin = () => {
                     ))}
                   </div>
 
-                  <Button onClick={handleVerification} disabled={loading}>
+                  <Button className="px-10" onClick={handleVerification} disabled={loading}>
                     {loading ? <Loader2 className="animate-spin" /> : (
                       "Verify OTP"
                     )}

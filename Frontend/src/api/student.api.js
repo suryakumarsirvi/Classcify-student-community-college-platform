@@ -6,12 +6,12 @@ const studentApi = {
     api
       .post('/api/students/signup', data)
       .catch((error) => {
-        if (error.response) {
-          if (error.response.data?.error?.name === 'ValidationError') {
-            const messages = Object.values(error.response.data.error.errors).map(
-              (e) => e.message
-            );
-            error.response.data.error = messages.join(', ');
+        if (error.originalError?.response) {
+          const data = error.originalError.response.data;
+          if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+            error.message = data.errors.map(e => e.message || e).join(', ');
+          } else if (data?.message) {
+            error.message = data.message;
           }
         }
         throw error;
@@ -62,7 +62,7 @@ const studentApi = {
       const response = await api.get(`/api/students/search?q=${encodeURIComponent(query)}`);
       return response.data;
     } catch (error) {
-      throw error.response?.data?.error || 'Search failed';
+      throw error.message || error.originalError?.response?.data?.message || 'Search failed';
     }
   },
 
@@ -73,7 +73,7 @@ const studentApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching assignments:', error);
-      throw error.response?.data?.message || 'Failed to fetch assignments';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch assignments';
     }
   },
 
@@ -84,7 +84,7 @@ const studentApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching announcements:', error);
-      throw error.response?.data?.message || 'Failed to fetch announcements';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch announcements';
     }
   },
 
@@ -101,7 +101,7 @@ const studentApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching attendance:', error);
-      throw error.response?.data?.message || 'Failed to fetch attendance';
+      throw error.message || error.originalError?.response?.data?.message || 'Failed to fetch attendance';
     }
   },
 

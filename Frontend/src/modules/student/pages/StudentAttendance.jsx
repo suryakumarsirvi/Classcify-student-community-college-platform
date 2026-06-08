@@ -196,6 +196,7 @@ const StudentAttendance = () => {
     try {
       toast.loading(`Exporting attendance data as ${format.toUpperCase()}...`);
       setTimeout(() => {
+        // Defer toast operations to next event loop to avoid render-phase updates
         toast.dismiss();
         toast.success(`Attendance data exported as ${format.toUpperCase()}`);
       }, 1000);

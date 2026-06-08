@@ -47,7 +47,7 @@ const AdminClassroom = () => {
         toast({
           variant: "destructive",
           title: "Failed to fetch students",
-          description: error.response?.data?.error || "Server error",
+          description: error.message || error.originalError?.response?.data?.message || "Server error",
         });
       } finally {
         setLoading(false);

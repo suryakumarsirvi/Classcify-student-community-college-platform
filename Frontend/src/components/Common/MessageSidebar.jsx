@@ -173,7 +173,7 @@ const MessageSidebar = ({ onSelect }) => {
         throw new Error("Failed to create community: Invalid response format");
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || error.message || "Failed to create community");
+      toast.error(error.message || error.originalError?.response?.data?.message || "Failed to create community");
     }
   };
 
