@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -45,25 +46,57 @@ import { NotionLogoIcon } from "@radix-ui/react-icons";
 import useAuth from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import useSocket from "@/hooks/useSocket";
 
 const StudentSidebar = ({ isExpanded, toggle }) => {
   const { user, updateUser } = useAuth();
+  const socket = useSocket();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    avatar: user?.avatar || "",
+    name: "",
+    email: "",
+    avatar: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || `${user.personal?.firstName || ""} ${user.personal?.lastName || ""}`.trim(),
+        email: user.personal?.email || user.email || "",
+        avatar: user.avatar || "",
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleInvitation = (invitation) => {
+      console.log("📩 Sidebar received invitation:", invitation);
+      toast.success(`You have been invited to join ${invitation.community?.name || 'a community'}!`, {
+        duration: 5000,
+        position: "top-right",
+      });
+    };
+
+    socket.on("new-invitation", handleInvitation);
+
+    return () => {
+      socket.off("new-invitation", handleInvitation);
+    };
+  }, [socket]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     try {
       await updateUser(profileData);
       setIsProfileOpen(false);
+      toast.success("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
+      toast.error(error.message || "Failed to update profile");
     }
   };
 
@@ -209,11 +242,16 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="cursor-pointer">
-                <AvatarImage
-                  src="https://i.pinimg.com/736x/b9/32/8e/b9328edcad29a71d3f420f8ca3732f1b.jpg"
-                  alt="Profile"
-                />
-                <AvatarFallback></AvatarFallback>
+                {user?.avatar || profileData.avatar ? (
+                  <AvatarImage
+                    src={user?.avatar || profileData.avatar}
+                    alt="Profile"
+                  />
+                ) : (
+                  <AvatarFallback className="bg-indigo-600 text-white font-semibold">
+                    {user?.personal?.firstName?.[0]?.toUpperCase() || "S"}
+                  </AvatarFallback>
+                )}
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -290,8 +328,13 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
               <Label htmlFor="avatar">Profile Picture</Label>
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src={profileData.avatar} />
-                  <AvatarFallback>{profileData.name?.[0]}</AvatarFallback>
+                  {profileData.avatar ? (
+                    <AvatarImage src={profileData.avatar} alt="Profile" />
+                  ) : (
+                    <AvatarFallback className="bg-indigo-600 text-white font-semibold text-xl">
+                      {profileData.name?.[0]?.toUpperCase() || "S"}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
                 <Input
                   id="avatar"

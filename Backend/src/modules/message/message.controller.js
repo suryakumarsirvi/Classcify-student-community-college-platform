@@ -37,7 +37,7 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   const { userId, senderType, senderName } = req.body;
   const communityId = req.params.communityId;
 
-  const { newInvitation, community } = await messageService.sendInvitation(
+  const { newInvitation, community, senderDetails } = await messageService.sendInvitation(
     communityId,
     req.user._id || req.user.id,
     req.user.role,
@@ -47,11 +47,38 @@ export const sendInvitation = asyncHandler(async (req, res) => {
   );
 
   if (req.io) {
-    req.io.to(userId).emit('newInvitation', {
-      invitation: newInvitation,
-      community: community,
-      senderName: senderName
-    });
+    const capitalizeRole = (role) => {
+      if (!role) return 'Student';
+      const r = role.toLowerCase();
+      if (r === 'admin') return 'Admin';
+      if (r === 'teacher') return 'Teacher';
+      return 'Student';
+    };
+
+    const formattedSender = {
+      _id: req.user._id || req.user.id,
+      personal: senderDetails?.personal || {
+        firstName: senderName?.split(' ')[0] || 'User',
+        lastName: senderName?.split(' ').slice(1).join(' ') || ''
+      },
+      role: capitalizedRole(req.user.role)
+    };
+
+    const socketInvitation = {
+      _id: newInvitation._id,
+      community: {
+        _id: community._id,
+        name: community.name,
+        image: community.image,
+        description: community.description
+      },
+      sender: formattedSender,
+      status: 'pending',
+      createdAt: newInvitation.createdAt
+    };
+
+    req.io.to(userId).emit('newInvitation', socketInvitation);
+    req.io.to(userId).emit('new-invitation', socketInvitation);
   }
 
   res.status(200).json({
@@ -154,13 +181,16 @@ export const sendCommunityMessage = asyncHandler(async (req, res) => {
   );
 
   if (req.io) {
-    req.io.to(communityId).emit('new-community-message', {
+    const socketPayload = {
       _id: populatedMessage._id,
       sender: populatedMessage.sender,
       content: populatedMessage.content,
       community: communityId,
+      conversation: communityId,
       createdAt: populatedMessage.createdAt
-    });
+    };
+    req.io.to(communityId).emit('new-community-message', socketPayload);
+    req.io.to(communityId).emit('new-message', socketPayload);
   }
 
   res.status(201).json(populatedMessage);

@@ -15,19 +15,12 @@ export const authService = {
     return data;
   },
 
-  updateUser: async (userData) => {
-    const formData = new FormData();
-    Object.keys(userData).forEach((key) => {
-      if (userData[key] !== undefined && userData[key] !== null) {
-        formData.append(key, userData[key]);
-      }
-    });
+  updateUser: async (userData, role) => {
+    const endpoint = role === "student" ? "/api/students/profile" :
+                     role === "teacher" ? "/api/teachers/profile" :
+                     "/api/admin/profile";
 
-    const { data } = await api.put("/api/auth/profile", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const { data } = await api.put(endpoint, userData);
     return data;
   },
 

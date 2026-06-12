@@ -82,7 +82,15 @@ class MessageService {
       throw new ApiError(404, 'Community not found');
     }
 
-    const isMember = community.members.includes(recipientId);
+    const capitalizeRole = (role) => {
+      if (!role) return 'Student';
+      const r = role.toLowerCase();
+      if (r === 'admin') return 'Admin';
+      if (r === 'teacher') return 'Teacher';
+      return 'Student';
+    };
+
+    const isMember = community.members.some(id => id.toString() === recipientId.toString());
     if (isMember) {
       throw new ApiError(400, 'User is already a member of this community');
     }
@@ -92,6 +100,29 @@ class MessageService {
       throw new ApiError(400, 'An invitation is already pending for this user');
     }
 
+    const sType = capitalizeRole(senderRole);
+    let senderDetails = null;
+    if (sType === 'Admin') {
+      senderDetails = await Admin.findById(senderId).select('name personal.firstName personal.lastName role');
+    } else if (sType === 'Teacher') {
+      senderDetails = await Teacher.findById(senderId).select('name personal.firstName personal.lastName role');
+    } else {
+      senderDetails = await Student.findById(senderId).select('name personal.firstName personal.lastName role');
+    }
+
+    const newInvitation = await messageRepository.createInvitation({
+      community: communityId,
+      sender: senderId,
+      senderType: sType,
+      recipient: recipientId,
+      recipientType: capitalizeRole(recipientRole),
+      status: 'pending'
+    });
+
+    return { newInvitation, community, senderDetails };
+  }
+
+  async getInvitations(userId, userType) {
     const capitalizeRole = (role) => {
       if (!role) return 'Student';
       const r = role.toLowerCase();
@@ -100,29 +131,17 @@ class MessageService {
       return 'Student';
     };
 
-    const newInvitation = await messageRepository.createInvitation({
-      community: communityId,
-      sender: senderId,
-      senderType: capitalizeRole(senderRole),
-      recipient: recipientId,
-      recipientType: capitalizeRole(recipientRole),
-      status: 'pending'
-    });
+    const normalizedUserType = capitalizeRole(userType);
 
-    return { newInvitation, community };
-  }
-
-  async getInvitations(userId, userType) {
     const invitations = await Invitation.find({
       recipient: userId,
-      recipientType: userType,
+      recipientType: normalizedUserType,
       status: 'pending'
     })
       .populate('community', 'name image')
       .populate({
         path: 'sender',
-        select: 'personal.firstName personal.lastName role',
-        model: userType
+        select: 'personal.firstName personal.lastName role'
       });
 
     return invitations.map(invitation => {

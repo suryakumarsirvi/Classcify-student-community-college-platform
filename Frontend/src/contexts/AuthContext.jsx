@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = async (userData) => {
     try {
-      const data = await authService.updateUser(userData);
+      const data = await authService.updateUser(userData, user?.role);
       dispatch(setUser({ ...data, role: user?.role }));
       return data;
     } catch (error) {

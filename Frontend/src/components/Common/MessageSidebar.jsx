@@ -33,12 +33,7 @@ const MessageSidebar = ({ onSelect }) => {
       const userCommunities = response?.data ? 
         (Array.isArray(response.data) ? response.data : [response.data]) : [];
       
-      const filteredCommunities = userCommunities.filter(community => {
-        if (!community || !community._id) return false;
-        return community.creator?._id === user._id;
-      });
-
-      return filteredCommunities.reduce((acc, current) => {
+      return userCommunities.reduce((acc, current) => {
         if (!current || !current._id) return acc;
         const exists = acc.find((item) => item._id === current._id);
         return exists ? acc : [...acc, current];

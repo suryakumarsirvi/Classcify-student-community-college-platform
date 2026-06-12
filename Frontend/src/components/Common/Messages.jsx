@@ -95,19 +95,29 @@ const Messages = () => {
     });
 
     
-    socket.on("direct-message", (message) => {
-      console.log("📨 New direct message received:", message);
-      const otherUserId = message.senderId === user._id ? message.receiverId : message.senderId;
-      
-      setDirectMessages(prev => ({
-        ...prev,
-        [otherUserId]: [...(prev[otherUserId] || []), formatMessage(message)]
-      }));
+    socket.on("new-message", (message) => {
+      console.log("📨 New message received via socket:", message);
+      if (!message.community) {
+        const msgSenderId = message.sender?._id || message.sender;
+        const msgReceiverId = message.receiver?._id || message.receiver;
+        const otherUserId = msgSenderId === user._id ? msgReceiverId : msgSenderId;
+        
+        if (otherUserId) {
+          setDirectMessages(prev => {
+            const list = prev[otherUserId] || [];
+            if (list.some(m => m.id === message._id)) return prev;
+            return {
+              ...prev,
+              [otherUserId]: [...list, formatMessage(message)]
+            };
+          });
+        }
+      }
     });
   
     return () => {
       socket.off("new-invitation");
-      socket.off("direct-message");
+      socket.off("new-message");
     };
   }, [socket, user]);
 

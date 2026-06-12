@@ -101,6 +101,30 @@ class StudentService {
     return student;
   }
 
+  async updateProfile(id, updateData) {
+    const student = await studentRepository.findById(id);
+    if (!student) {
+      throw new ApiError(404, 'Student not found');
+    }
+
+    if (updateData.name) {
+      const parts = updateData.name.trim().split(/\s+/);
+      student.personal.firstName = parts[0] || student.personal.firstName;
+      student.personal.lastName = parts.slice(1).join(' ') || '';
+    }
+
+    if (updateData.email) {
+      const existing = await studentRepository.findByEmail(updateData.email);
+      if (existing && existing._id.toString() !== id.toString()) {
+        throw new ApiError(400, 'Email already in use');
+      }
+      student.personal.email = updateData.email;
+    }
+
+    await student.save();
+    return student;
+  }
+
   async getAllStudents() {
     return await studentRepository.findAll();
   }

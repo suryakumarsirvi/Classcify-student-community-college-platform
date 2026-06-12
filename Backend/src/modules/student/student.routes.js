@@ -5,6 +5,7 @@ import {
   verify,
   login,
   getProfile,
+  updateProfile,
   getAllStudents,
   searchUsers,
   getAssignments,
@@ -20,6 +21,7 @@ router.post('/verify/:id', verify);
 router.post('/login', login);
 
 router.get('/profile', auth(['student']), getProfile);
+router.put('/profile', auth(['student']), updateProfile);
 router.get('/', auth(['admin', 'teacher', 'student']), getAllStudents);
 router.get('/search', auth(['student', 'teacher', 'admin']), searchUsers);
 

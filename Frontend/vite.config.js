@@ -11,6 +11,9 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    allowedHosts: [
+      "ec2-65-0-170-113.ap-south-1.compute.amazonaws.com",
+    ]
   },
   plugins: [
     tailwindcss(),

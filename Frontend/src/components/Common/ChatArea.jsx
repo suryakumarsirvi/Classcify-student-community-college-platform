@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import useSocket from "@/hooks/useSocket";
-import { Plus, Send, Check, Search, X } from "lucide-react";
+import { Plus, Send, Check, Search, X, Users } from "lucide-react";
 import chatIcon from "@/assets/images/chats-new.svg";
 import ChatInput from "../ui/ChatInput";
 import useAuth from "@/contexts/AuthContext";
@@ -27,11 +27,30 @@ export const ChatArea = ({
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isInvitationSent, setIsInvitationSent] = useState(false);
+  const [communityDetails, setCommunityDetails] = useState(null);
+  const [isMembersListOpen, setIsMembersListOpen] = useState(false);
   const { user } = useAuth();
   const socket = useSocket();
   const messagesEndRef = useRef(null);
 
-  console.log(messages)
+  const fetchCommunityDetails = async () => {
+    if (selectedConversation?.type === "community") {
+      try {
+        const response = await MessageAPI.getCommunityDetails(selectedConversation._id);
+        if (response?.data) {
+          setCommunityDetails(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching community details:", error);
+      }
+    } else {
+      setCommunityDetails(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommunityDetails();
+  }, [selectedConversation]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -122,11 +141,26 @@ export const ChatArea = ({
   };
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !selectedConversation) return;
 
     const handleNewMessage = (message) => {
-      if (message.conversation === selectedConversation?._id) {
-        setLocalMessages((prev) => [...prev, message]);
+      let isForCurrentChat = false;
+      if (selectedConversation.type === "direct") {
+        const otherUserId = selectedConversation.participants?.find(p => p._id !== user._id)?._id || selectedConversation._id;
+        const msgSenderId = message.sender?._id || message.sender;
+        const msgReceiverId = message.receiver?._id || message.receiver;
+        
+        isForCurrentChat = (msgSenderId === user._id && msgReceiverId === otherUserId) ||
+                           (msgSenderId === otherUserId && msgReceiverId === user._id);
+      } else if (selectedConversation.type === "community") {
+        isForCurrentChat = message.conversation === selectedConversation._id || message.community === selectedConversation._id;
+      }
+
+      if (isForCurrentChat) {
+        setLocalMessages((prev) => {
+          if (prev.some(m => m._id === message._id)) return prev;
+          return [...prev, message];
+        });
         setTimeout(scrollToBottom, 100);
       }
     };
@@ -136,15 +170,36 @@ export const ChatArea = ({
     return () => {
       socket.off("new-message", handleNewMessage);
     };
+  }, [socket, selectedConversation, user?._id]);
+
+  useEffect(() => {
+    if (!socket || !selectedConversation || selectedConversation.type !== "community") return;
+
+    const communityId = selectedConversation._id;
+    console.log(`🔌 Joining community room: ${communityId}`);
+    socket.emit("joinCommunity", communityId);
+
+    return () => {
+      console.log(`🔌 Leaving community room: ${communityId}`);
+      socket.emit("leaveCommunity", communityId);
+    };
   }, [socket, selectedConversation]);
 
   useEffect(() => {
     const loadMessages = async () => {
       if (!selectedConversation?._id) return;
       try {
-        const response = await MessageAPI.getConversationMessages(selectedConversation._id);
+        let response;
+        if (selectedConversation.type === "direct") {
+          const otherUserId = selectedConversation.participants?.find(p => p._id !== user._id)?._id || selectedConversation._id;
+          response = await MessageAPI.getDirectMessages(otherUserId);
+        } else {
+          response = await MessageAPI.getConversationMessages(selectedConversation._id);
+        }
+
         if (response?.data) {
-          setLocalMessages(response.data);
+          const rawMessages = Array.isArray(response.data) ? response.data : [response.data];
+          setLocalMessages(rawMessages);
           setTimeout(scrollToBottom, 100);
         }
       } catch (error) {
@@ -153,7 +208,7 @@ export const ChatArea = ({
     };
 
     loadMessages();
-  }, [selectedConversation]);
+  }, [selectedConversation, user?._id]);
 
   const handleSearch = async (e) => {
     const query = e.target.value.trim();
@@ -259,17 +314,28 @@ export const ChatArea = ({
 
               {}
               {selectedConversation?.type === "community" && (
-                <Button
-                  onClick={() => setIsSearchOpen(true)}
-                  variant="ghost"
-                  className="hover:bg-zinc-100 cursor-pointer h-8 w-8 rounded-full"
-                >
-                  {isInvitationSent ? (
-                    <Check className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    onClick={() => setIsMembersListOpen(true)}
+                    variant="ghost"
+                    className="hover:bg-zinc-100 cursor-pointer h-8 w-8 rounded-full flex items-center justify-center"
+                    title="View Members"
+                  >
+                    <Users className="h-4 w-4 text-zinc-600" />
+                  </Button>
+                  <Button
+                    onClick={() => setIsSearchOpen(true)}
+                    variant="ghost"
+                    className="hover:bg-zinc-100 cursor-pointer h-8 w-8 rounded-full flex items-center justify-center"
+                    title="Add Members"
+                  >
+                    {isInvitationSent ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               )}
             </div>
 
@@ -317,28 +383,103 @@ export const ChatArea = ({
                         <Loader2 className="h-6 w-6 animate-spin" />
                       </div>
                     ) : (
-                      searchResults.map((user) => (
-                        <div
-                          key={user._id}
-                          className="flex items-center justify-between p-2 hover:bg-gray-100 rounded cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white">
-                              {user.personal.firstName[0]}
-                            </div>
-                            <span>
-                              {user.personal.firstName} {user.personal.lastName}
-                            </span>
-                          </div>
-                          <Button
-                            size="sm"
-                            onClick={() => handleSendInvitation(user)}
-                            disabled={isInvitationSent}
+                      searchResults.map((searchUser) => {
+                        const isAlreadyMember = communityDetails?.members?.some(m => m._id === searchUser._id) || 
+                                                selectedConversation?.members?.some(m => (m._id === searchUser._id || m === searchUser._id));
+                        return (
+                          <div
+                            key={searchUser._id}
+                            className="flex items-center justify-between p-2 hover:bg-gray-100 rounded cursor-pointer"
                           >
-                            Add
-                          </Button>
+                            <div className="flex items-center gap-2">
+                              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white">
+                                {searchUser.personal?.firstName?.[0] || "?"}
+                              </div>
+                              <span>
+                                {searchUser.personal?.firstName} {searchUser.personal?.lastName}
+                              </span>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => handleSendInvitation(searchUser)}
+                              disabled={isAlreadyMember || isInvitationSent}
+                              className={isAlreadyMember ? "bg-zinc-100 text-zinc-400 hover:bg-zinc-100 cursor-not-allowed" : ""}
+                            >
+                              {isAlreadyMember ? "Added" : "Add"}
+                            </Button>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* View Members List Modal */}
+            {isMembersListOpen && (
+              <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-in fade-in duration-200">
+                <div className="bg-white p-6 rounded-lg w-96 shadow-xl max-w-md">
+                  <div className="flex justify-between items-center mb-4 border-b pb-2">
+                    <div className="text-lg font-semibold flex items-center gap-2">
+                      <Users className="h-5 w-5 text-primary" />
+                      <span>Community Members</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => setIsMembersListOpen(false)}
+                      className="h-8 w-8 rounded-full hover:bg-gray-100"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="max-h-80 overflow-y-auto space-y-3 pr-1">
+                    {/* Display creator first */}
+                    {communityDetails?.creator && (
+                      <div className="flex items-center justify-between p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/50">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-9 w-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-sm">
+                            {communityDetails.creator.personal?.firstName?.[0]?.toUpperCase() || 
+                             communityDetails.creator.name?.[0]?.toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-sm text-zinc-900">
+                              {communityDetails.creator.personal?.firstName ? 
+                                `${communityDetails.creator.personal.firstName} ${communityDetails.creator.personal.lastName}` : 
+                                communityDetails.creator.name || "Unknown User"}
+                            </div>
+                            <div className="text-xs text-indigo-600 font-medium">Creator</div>
+                          </div>
                         </div>
-                      ))
+                      </div>
+                    )}
+
+                    {/* Display other members */}
+                    {communityDetails?.members?.filter(m => m._id !== communityDetails.creator?._id).map((member) => (
+                      <div
+                        key={member._id}
+                        className="flex items-center justify-between p-2 hover:bg-zinc-50 rounded-lg transition-colors border border-transparent"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-9 w-9 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-700 font-semibold text-sm">
+                            {member.personal?.firstName?.[0]?.toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-sm text-zinc-900">
+                              {member.personal?.firstName} {member.personal?.lastName}
+                            </div>
+                            <div className="text-xs text-zinc-500">
+                              {member.academic?.course || "Student"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {(!communityDetails?.members || communityDetails.members.length === 0) && (
+                      <p className="text-center text-sm text-zinc-500 py-4">No members found</p>
                     )}
                   </div>
                 </div>

@@ -30,6 +30,11 @@ export const getProfile = asyncHandler(async (req, res) => {
   res.json(student);
 });
 
+export const updateProfile = asyncHandler(async (req, res) => {
+  const student = await studentService.updateProfile(req.user._id, req.body);
+  res.json(student);
+});
+
 export const getAllStudents = asyncHandler(async (req, res) => {
   const students = await studentService.getAllStudents();
   res.json(students);
