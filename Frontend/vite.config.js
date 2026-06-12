@@ -10,10 +10,7 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
-    },
-    allowedHosts: [
-      "ec2-65-0-170-113.ap-south-1.compute.amazonaws.com",
-    ]
+    }
   },
   plugins: [
     tailwindcss(),
