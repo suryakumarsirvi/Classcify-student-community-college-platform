@@ -5,13 +5,14 @@ import sanitize from './middlewares/sanitize.middleware.js';
 import { apiRateLimiter } from './middlewares/rateLimit.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import rootRouter from './routes/index.route.js';
+import env from './config/env.config.js';
 
 const app = express();
 
 app.use(helmet());
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: env.CORS_ORIGIN || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-socket-id'],
   credentials: true
