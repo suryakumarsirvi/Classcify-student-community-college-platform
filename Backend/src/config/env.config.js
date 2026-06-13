@@ -9,6 +9,7 @@ const REQUIRED_ENV_VARS = [
   'TWILIO_PHONE',
   'SMTP_HOST',
   'SMTP_PASS',
+  'CORS_ORIGIN',
   'SENDER_EMAIL',
   'CLOUDINARY_CLOUD_NAME',
   'CLOUDINARY_API_KEY',
@@ -35,6 +36,7 @@ if (missing.length > 0) {
 
 const env = Object.freeze({
   MONGO_URI: process.env.MONGO_URI || process.env.MONGODB_URI,
+  CORS_ORIGIN: process.env.CORS_ORIGIN || process.env.CLIENT_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   ADMIN_EMAIL: process.env.ADMIN_EMAIL,
   ADMIN_INITIAL_PASSWORD: process.env.ADMIN_INITIAL_PASSWORD,
@@ -56,6 +58,7 @@ const env = Object.freeze({
 export default env;
 export const {
   MONGO_URI,
+  CORS_ORIGIN,
   JWT_SECRET,
   ADMIN_EMAIL,
   ADMIN_INITIAL_PASSWORD,
