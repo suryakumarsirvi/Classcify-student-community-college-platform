@@ -9,13 +9,26 @@ import env from './src/config/env.config.js';
 
 connectDB();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  env.CORS_ORIGIN,
+];
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: env.CORS_ORIGIN,
-    methods: ['GET', 'POST'],
-    credentials: true
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST"]
   },
   connectionStateRecovery: {
     maxDisconnectionDuration: 2 * 60 * 1000,

@@ -4,14 +4,14 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig({
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://the-classcify-server.onrender.com',
-        changeOrigin: true,
-      },
-    }
-  },
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       target: 'https://the-classcify-server.onrender.com',
+  //       changeOrigin: true,
+  //     },
+  //   }
+  // },
   plugins: [
     tailwindcss(),
     react()
