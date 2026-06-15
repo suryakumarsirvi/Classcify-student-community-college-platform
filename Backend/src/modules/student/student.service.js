@@ -22,6 +22,7 @@ class StudentService {
       const emailResponse = await emailService.sendOtp(personal.email, otp);   
     } catch (error) {
       throw new ApiError(500, 'Otp sending email failed', error.message);
+      console.log("Error sending otp mail: " + error.message)
     }
 
     if (!emailResponse.success) {
