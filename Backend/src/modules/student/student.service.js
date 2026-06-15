@@ -18,6 +18,16 @@ class StudentService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
 
+    try {
+      const emailResponse = await emailService.sendOtp(personal.email, otp);   
+    } catch (error) {
+      throw new ApiError(500, 'Otp sending email failed', error.message);
+    }
+
+    if (!emailResponse.success) {
+      throw new ApiError(500, 'User registered but OTP email failed', emailResponse.error);
+    }
+
     const student = await studentRepository.create({
       personal,
       academic,
@@ -32,11 +42,6 @@ class StudentService {
         otpExpires
       }
     });
-
-    const emailResponse = await emailService.sendOtp(personal.email, otp);
-    if (!emailResponse.success) {
-      throw new ApiError(500, 'User registered but OTP email failed', emailResponse.error);
-    }
 
     return student;
   }
