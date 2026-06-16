@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ChatArea from "./ChatArea";
 import MessageSidebar from "./MessageSidebar";
-import { Check, Loader, Loader2, Plus, Search, X, Users, MessageSquare, SendHorizontal } from "lucide-react";
+import { Check, Plus, Search, X, Users, MessageSquare, SendHorizontal } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import api from "@/api/axios";
@@ -157,7 +158,7 @@ const Messages = () => {
     try {
       const data = await MessageAPI.sendInvitation({
         communityId: selectedCommunity._id,
-        recipientId: user._id,
+        userId: user._id,
       });
   
       console.log("✅ Invitation sent:", data);
@@ -404,7 +405,7 @@ const Messages = () => {
             <div className="max-h-60 overflow-y-auto transition-all ease-in-out duration-100">
               {loading ? (
                 <div className="flex transition-all ease-in-out duration-75 items-center justify-center text-gray-500 py-8">
-                  <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                  <Spinner size="xs" className="mr-2" />
                   <span>Searching...</span>
                 </div>
               ) : getFilteredResults().length > 0 ? (

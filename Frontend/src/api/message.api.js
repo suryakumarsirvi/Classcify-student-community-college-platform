@@ -135,7 +135,7 @@ export const MessageAPI = {
 
     acceptInvitation: async (invitationId) => {
         try {
-            const response = await api.patch(`/api/invitations/${invitationId}/accept`);
+            const response = await api.patch(`/api/messages/invitations/${invitationId}/accept`);
             return response;
         } catch (error) {
             console.error('Error accepting invitation:', error);
@@ -145,7 +145,7 @@ export const MessageAPI = {
 
     rejectInvitation: async (invitationId) => {
         try {
-            const response = await api.post(`/api/messages/communities/invite/${invitationId}/reject`);
+            const response = await api.delete(`/api/messages/invitations/${invitationId}`);
             return response;
         } catch (error) {
             console.error('Error rejecting invitation:', error);

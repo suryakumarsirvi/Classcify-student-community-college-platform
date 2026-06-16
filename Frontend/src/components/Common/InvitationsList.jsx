@@ -1,19 +1,20 @@
 
 import React, { useEffect, useState } from 'react';
-import { CommunityAPI } from '@/api/message.api';
+import { MessageAPI } from '@/api/message.api';
+import { Button } from '@/components/ui/button';
 
 const InvitationsList = () => {
   const [invitations, setInvitations] = useState([]);
 
   useEffect(() => {
-    CommunityAPI.getUserInvitations()
+    MessageAPI.getInvitations()
       .then(setInvitations)
       .catch(console.error);
   }, []);
 
   const handleAccept = async (invitationId) => {
     try {
-      await CommunityAPI.acceptInvite(invitationId);
+      await MessageAPI.acceptInvitation(invitationId);
       setInvitations(prev => prev.filter(i => i._id !== invitationId));
     } catch (error) {
       console.error('Accept error:', error);

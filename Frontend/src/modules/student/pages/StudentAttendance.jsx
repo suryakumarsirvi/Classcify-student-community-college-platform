@@ -34,13 +34,13 @@ import {
   Download,
   Filter,
   Info,
-  Loader2,
   MoreVertical,
   Printer,
   RefreshCw,
   Search,
   XCircle,
 } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -358,7 +358,7 @@ const StudentAttendance = () => {
                   {format(new Date(day.date), "EEEE, MMMM d, yyyy")}
                 </h3>
                 <Badge variant="outline">
-                  {day.records.filter(r => r.status === "Present").length} / {day.records.length} Present
+                  {day.records.filter(r => r.status.toLowerCase() === "present").length} / {day.records.length} Present
                 </Badge>
               </div>
               <div className="space-y-2">
@@ -368,9 +368,9 @@ const StudentAttendance = () => {
                     className="flex items-center justify-between p-2 border rounded-lg"
                   >
                     <div className="flex items-center gap-2">
-                      {record.status === "Present" ? (
+                      {record.status.toLowerCase() === "present" ? (
                         <CheckCircle2 className="h-4 w-4 text-green-500" />
-                      ) : record.status === "Absent" ? (
+                      ) : record.status.toLowerCase() === "absent" ? (
                         <XCircle className="h-4 w-4 text-red-500" />
                       ) : (
                         <Clock className="h-4 w-4 text-yellow-500" />
@@ -396,7 +396,7 @@ const StudentAttendance = () => {
   if (loading) {
     return (
       <div className="min-h-screen p-8 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Spinner size="lg" />
       </div>
     );
   }

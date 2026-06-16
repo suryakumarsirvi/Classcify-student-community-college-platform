@@ -20,12 +20,15 @@ const useSocket = () => {
     }
 
     if (!globalSocket) {
+      const rawToken = localStorage.getItem("studentToken") ||
+        localStorage.getItem("teacherToken") ||
+        localStorage.getItem("adminToken");
+      const cleanToken = rawToken ? rawToken.replace(/['"]/g, "").trim() : null;
+
       globalSocket = io(SOCKET_URL, {
         withCredentials: true,
         auth: {
-          token: localStorage.getItem("studentToken") ||
-            localStorage.getItem("teacherToken") ||
-            localStorage.getItem("adminToken")
+          token: cleanToken
         }
       });
 

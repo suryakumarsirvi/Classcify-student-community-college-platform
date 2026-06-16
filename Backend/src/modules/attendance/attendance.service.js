@@ -200,7 +200,7 @@ class AttendanceService {
         date: record.date,
         status: entry ? entry.status : 'N/A',
         remark: entry ? entry.remark : '',
-        teacher: record.teacher ? record.teacher.name : 'Unknown'
+        teacher: record.teacher && record.teacher.personal ? record.teacher.personal.name : 'Unknown'
       };
     });
 

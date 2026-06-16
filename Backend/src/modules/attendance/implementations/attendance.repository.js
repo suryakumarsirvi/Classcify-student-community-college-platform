@@ -4,12 +4,13 @@ import AttendanceRepositoryContract from '../contracts/attendance.repository.con
 class AttendanceRepository extends AttendanceRepositoryContract {
   async findOne(query) {
     return await Attendance.findOne(query)
-      .populate('students.student', 'name roll email')
-      .populate('teacher', 'name email');
+      .populate('students.student', 'personal.firstName personal.lastName personal.email')
+      .populate('teacher', 'personal.name professional.email');
   }
 
   async find(query) {
-    return await Attendance.find(query);
+    return await Attendance.find(query)
+      .populate('teacher', 'personal.name professional.email');
   }
 
   async findByIdAndUpdate(id, updateData, options = {}) {

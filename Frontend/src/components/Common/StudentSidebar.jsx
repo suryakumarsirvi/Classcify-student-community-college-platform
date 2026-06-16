@@ -47,6 +47,8 @@ import useAuth from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import useSocket from "@/hooks/useSocket";
+import { MessageAPI } from "@/api/message.api";
+import api from "@/api/axios";
 
 const StudentSidebar = ({ isExpanded, toggle }) => {
   const { user, updateUser } = useAuth();
@@ -54,6 +56,7 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -71,22 +74,67 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
   }, [user]);
 
   useEffect(() => {
+    if (!user?._id) return;
+
+    const fetchCounts = async () => {
+      try {
+        const invitations = await MessageAPI.getInvitations();
+        let joinRequests = [];
+        try {
+          const res = await api.get('/api/messages/communities/join-requests');
+          joinRequests = res.data || [];
+        } catch (e) {
+          console.error("Failed to load join requests in sidebar:", e);
+        }
+        
+        const inviteCount = Array.isArray(invitations) ? invitations.length : 0;
+        const requestCount = Array.isArray(joinRequests) ? joinRequests.length : 0;
+        setNotificationCount(inviteCount + requestCount);
+      } catch (error) {
+        console.error("Failed to fetch notification counts for sidebar:", error);
+      }
+    };
+
+    fetchCounts();
+  }, [user?._id]);
+
+  useEffect(() => {
     if (!socket) return;
 
     const handleInvitation = (invitation) => {
       console.log("📩 Sidebar received invitation:", invitation);
+      setNotificationCount(prev => prev + 1);
       toast.success(`You have been invited to join ${invitation.community?.name || 'a community'}!`, {
         duration: 5000,
         position: "top-right",
       });
     };
 
+    const handleJoinRequest = (request) => {
+      console.log("📩 Sidebar received join request:", request);
+      setNotificationCount(prev => prev + 1);
+      toast.success(`New join request received for ${request.communityName || 'your community'}!`, {
+        duration: 5000,
+        position: "top-right",
+      });
+    };
+
     socket.on("new-invitation", handleInvitation);
+    socket.on("join-request-received", handleJoinRequest);
 
     return () => {
       socket.off("new-invitation", handleInvitation);
+      socket.off("join-request-received", handleJoinRequest);
     };
   }, [socket]);
+
+  useEffect(() => {
+    const handleClear = () => {
+      setNotificationCount(0);
+    };
+    window.addEventListener('clear-notifications-badge', handleClear);
+    return () => window.removeEventListener('clear-notifications-badge', handleClear);
+  }, []);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -208,7 +256,7 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
                             : "rgba(224, 231, 255, 0)",
                         }}
                         className={cn(
-                          "flex items-center gap-3 w-full cursor-pointer p-3 rounded-lg text-zinc-700 transition-colors",
+                          "relative flex items-center gap-3 w-full cursor-pointer p-3 rounded-lg text-zinc-700 transition-colors",
                           isActive
                             ? "text-indigo-700 font-semibold"
                             : "hover:bg-zinc-100",
@@ -225,6 +273,16 @@ const StudentSidebar = ({ isExpanded, toggle }) => {
                           >
                             {item.label}
                           </motion.span>
+                        )}
+                        {item.id === "notifications" && notificationCount > 0 && (
+                          <span className={cn(
+                            "absolute flex items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm",
+                            isExpanded 
+                              ? "right-3 h-5 min-w-[20px] px-1.5" 
+                              : "top-1 right-1 h-4 w-4"
+                          )}>
+                            {notificationCount}
+                          </span>
                         )}
                       </motion.div>
                     )}

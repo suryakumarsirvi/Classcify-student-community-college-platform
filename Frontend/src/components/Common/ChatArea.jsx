@@ -7,7 +7,7 @@ import chatIcon from "@/assets/images/chats-new.svg";
 import ChatInput from "../ui/ChatInput";
 import useAuth from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 import studentApi from "@/api/student.api";
 import { MessageAPI } from "@/api/message.api";
 
@@ -380,7 +380,7 @@ export const ChatArea = ({
                   <div className="max-h-60 overflow-y-auto">
                     {isSearching ? (
                       <div className="flex items-center justify-center p-4">
-                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <Spinner size="xs" />
                       </div>
                     ) : (
                       searchResults.map((searchUser) => {

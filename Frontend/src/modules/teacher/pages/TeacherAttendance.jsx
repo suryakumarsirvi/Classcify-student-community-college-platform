@@ -26,7 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Loader2, Save, Users, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Calendar, Save, Users, AlertCircle, CheckCircle2 } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 import teacherService from "@/modules/teacher/services/teacher.service";
 import { toast } from "sonner";
 
@@ -229,7 +230,7 @@ const TeacherAttendance = () => {
                 <Label htmlFor="classroom">Classroom / Course</Label>
                 {loading ? (
                   <div className="h-10 flex items-center justify-center border rounded-md bg-white">
-                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    <Spinner size="xs" className="text-zinc-500" />
                   </div>
                 ) : (
                   <Select value={selectedCourse} onValueChange={setSelectedCourse}>
@@ -302,7 +303,7 @@ const TeacherAttendance = () => {
           <CardContent>
             {loadingStudents ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                <Spinner size="sm" className="text-indigo-600" />
                 <p className="text-muted-foreground text-sm">Fetching student roster...</p>
               </div>
             ) : students.length === 0 ? (
